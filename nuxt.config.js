@@ -4,7 +4,7 @@ const routerBase =
   process.env.DEPLOY_ENV === 'GH_PAGES'
     ? {
         router: {
-          base: '/' + process.env.npm_package_name + '/'
+          base: '/alphaLib-web/'
         }
       }
     : {}
