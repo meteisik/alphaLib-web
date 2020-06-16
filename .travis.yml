@@ -7,8 +7,8 @@ cache:
     - "node_modules"
 
 branches:
-  only:
-    - master
+  except:
+    - gh-pages
 
 install:
   - npm install
@@ -18,9 +18,10 @@ script:
   - echo "Skipping tests"
 
 deploy:
-  provider: pages
-  skip-cleanup: true
+  provider: pages:git
   github-token: $GITHUB_ACCESS_TOKEN  # Set in travis-ci.org dashboard, marked secure https://docs.travis-ci.com/user/deployment/pages/#Setting-the-GitHub-token
+  edge: true
+  cleanup: true
   target-branch: gh-pages
   local-dir: dist
   on:
