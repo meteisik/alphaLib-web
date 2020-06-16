@@ -22,7 +22,7 @@ export default {
   /*
    ** Customize the progress-bar color
    */
-  loading: { color: '#fff' },
+  loading: { color: '#6fd6fc' },
   /*
    ** Global CSS
    */
@@ -41,10 +41,17 @@ export default {
     '@nuxtjs/stylelint-module',
     '@nuxtjs/vuetify'
   ],
+  proxy: {
+    '/api/': {
+      target: 'http://hp:9200',
+      pathRewrite: { '^/api/': '' }
+    }
+  },
   /*
    ** Nuxt.js modules
    */
   modules: [
+    // '@nuxt/http',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
@@ -55,7 +62,9 @@ export default {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {},
+  axios: {
+    proxy: true
+  },
   /*
    ** vuetify module configuration
    ** https://github.com/nuxt-community/vuetify-module
@@ -63,7 +72,7 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: true,
+      dark: false,
       themes: {
         dark: {
           primary: colors.blue.darken2,

@@ -1,65 +1,39 @@
 <template>
-  <v-layout column justify-center align-center>
-    <v-flex xs12 sm8 md6>
+  <v-row align="center" justify="center">
+    <v-col cols="12" class="mt-10">
       <div class="text-center">
         <logo />
         <vuetify-logo />
       </div>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>
-            Vuetify is a progressive Material Design component framework for
-            Vue.js. It was designed to empower developers to create amazing
-            applications.
-          </p>
-          <p>
-            For more information on Vuetify, check out the
-            <a href="https://vuetifyjs.com" target="_blank"> documentation </a>.
-          </p>
-          <p>
-            If you have questions, please join the official
-            <a href="https://chat.vuetifyjs.com/" target="_blank" title="chat">
-              discord </a
-            >.
-          </p>
-          <p>
-            Find a bug? Report it on the github
-            <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              title="contribute"
-            >
-              issue board </a
-            >.
-          </p>
-          <p>
-            Thank you for developing with Vuetify and I look forward to bringing
-            more exciting features in the future.
-          </p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3" />
-          <a href="https://nuxtjs.org/" target="_blank">
-            Nuxt Documentation
-          </a>
-          <br />
-          <a href="https://github.com/nuxt/nuxt.js" target="_blank">
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="primary" nuxt to="/inspire">
-            Continue
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-flex>
-  </v-layout>
+    </v-col>
+    <v-col cols="6" align-self="center" class="text-center">
+      <v-autocomplete
+        v-model="query"
+        :search-input.sync="search"
+        :items="hits"
+        :loading="isLoading"
+        :outlined="!solo"
+        :solo="solo"
+        rounded
+        single-line
+        auto-select-first
+        autofocus
+        cache-items
+        full-width
+        prepend-inner-icon="mdi-magnify"
+        color="primary"
+        hide-no-data
+        hide-selected
+        item-text="_source.meta.title"
+        item-value="_source.meta.author"
+        placeholder="The meaning of life..."
+        return-object
+        @keyup.native.enter="doSearch"
+      >
+      </v-autocomplete>
+      <v-btn link :to="'/search?q=' + search" blo>Search</v-btn>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -70,6 +44,81 @@ export default {
   components: {
     Logo,
     VuetifyLogo
+  },
+  data() {
+    return {
+      isLoading: false,
+      solo: false,
+      query: '',
+      search: '',
+      suggestions: null
+    }
+  },
+  computed: {
+    hits() {
+      if (this.suggestions === null) return []
+      if (Object.keys(this.suggestions).includes('hits'))
+        if (Object.keys(this.suggestions.hits).includes('hits'))
+          return this.suggestions.hits.hits
+      return []
+    }
+  },
+  watch: {
+    search(val) {
+      console.log(val)
+      this.querySuggestions(val)
+    }
+  },
+  methods: {
+    async lookUp(el) {
+      const q = this.query
+      const res = await this.$axios.post('/api/literature/_search', {
+        explain: true,
+        sort: ['_score'],
+        query: {
+          multi_match: {
+            query: q,
+            type: 'bool_prefix',
+            fields: ['content', 'meta.*']
+          }
+        }
+      })
+      this.search = res.data
+    },
+    async querySuggestions(q) {
+      this.isLoading = true
+      const suggestions = await this.$axios
+        .post('/api/literature/_search', {
+          explain: true,
+          _source: ['path'],
+          query: {
+            multi_match: {
+              query: q,
+              type: 'bool_prefix',
+              fields: ['meta', 'content']
+            }
+          },
+          highlight: {
+            type: 'unified',
+            order: 'score',
+            fields: {
+              content: { number_of_fragments: 200 }
+            }
+          }
+        })
+        .then((res) => {
+          return res.data
+        })
+        .catch((e) => {
+          console.log(e)
+          return {}
+        })
+      this.isLoading = false
+      this.suggestions = suggestions
+    },
+    doSearch() {
+      this.$router.push('/search?q=' + this.search)
+    }
   }
 }
 </script>

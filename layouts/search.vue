@@ -40,6 +40,20 @@
       <!--      </v-btn>-->
       <v-toolbar-title v-text="title" />
       <v-spacer />
+      <v-text-field
+        v-model="search"
+        :loading="isLoading"
+        :outlined="!solo"
+        :solo="solo"
+        rounded
+        single-line
+        dense
+        hide-details
+        cache-items
+        prepend-inner-icon="mdi-magnify"
+        placeholder="The meaning of life..."
+      ></v-text-field>
+      <v-spacer />
       <v-btn icon @click.stop="dark = !dark">
         <v-icon>mdi-{{ `brightness-${dark ? '5' : '4'}` }}</v-icon>
       </v-btn>
@@ -81,7 +95,7 @@
 
 <script>
 export default {
-  name: 'DefaultLayout',
+  name: 'SearchLayout',
   data() {
     return {
       clipped: false,
@@ -102,7 +116,9 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'AlphaLib'
+      title: 'AlphaLib',
+      isLoading: false,
+      solo: true
     }
   },
   computed: {
@@ -113,6 +129,19 @@ export default {
       set(val) {
         this.$vuetify.theme.dark = val
       }
+    },
+    search() {
+      return this.$route.query.q
+    },
+    hits() {
+      return []
+      // if (this.search === null) return []
+      // return this.search.hits.hits
+    }
+  },
+  methods: {
+    doSearch() {
+      this.$router.push('/search?q=' + this.search)
     }
   }
 }
