@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/InsightfulSummer/alphaLib-web.svg?branch=master)](https://travis-ci.com/InsightfulSummer/alphaLib-web)
-[![License][license-src]][license-href]
+[![License][https://github.com/InsightfulSummer/alphaLib-web/blob/dev/LICENSE]][https://github.com/InsightfulSummer/alphaLib-web/blob/dev/LICENSE]
 
 # alphaLib
 
