@@ -1,6 +1,16 @@
 import colors from 'vuetify/es5/util/colors'
 
+const routerBase =
+  process.env.DEPLOY_ENV === 'GH_PAGES'
+    ? {
+        router: {
+          base: process.env.npm_package_name
+        }
+      }
+    : {}
+
 export default {
+  routerBase,
   mode: 'universal',
   /*
    ** Headers of the page
@@ -43,7 +53,7 @@ export default {
   ],
   proxy: {
     '/api/': {
-      target: 'http://hp:9200',
+      target: 'http://sts2944.cloud.csd.uwo.ca:5001',
       pathRewrite: { '^/api/': '' }
     }
   },
