@@ -3,14 +3,12 @@ import colors from 'vuetify/es5/util/colors'
 const routerBase =
   process.env.DEPLOY_ENV === 'GH_PAGES'
     ? {
-        router: {
-          base: '/alphaLib-web/'
-        }
+        base: '/alphaLib-web/'
       }
     : {}
 
 export default {
-  routerBase,
+  router: routerBase,
   mode: 'universal',
   /*
    ** Headers of the page
