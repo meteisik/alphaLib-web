@@ -1,10 +1,18 @@
 <template>
   <div>
-    Hi
+    Sum of all words --> {{ allWords }} <br />
+    <h1>Hello There</h1>
   </div>
 </template>
 
 <script>
+function wordCount(array1) {
+  let words = 0
+  for (let i = 0; i < array1.length; i++) {
+    words += array1[i].term_vectors.content.field_statistics.sum_doc_freq
+  }
+  return words
+}
 export default {
   name: 'Analytics',
   async asyncData({ query, $axios }) {
@@ -52,7 +60,10 @@ export default {
         console.log(e)
         return {}
       })
-    return { docs, term_vectors: termVectors.docs }
+    // const array1 = termVectors.docs[0].term_vectors.content
+    const array1 = termVectors.docs
+    const allWords = wordCount(array1)
+    return { docs, term_vectors: termVectors.docs, allWords }
   }
 }
 </script>
