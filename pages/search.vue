@@ -2,7 +2,7 @@
   <v-row align="start" justify="start" no-gutters>
     <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="12" md="4">
       <v-card color="primary" dark>
-        <div class="d-flex flex-no-wrap justify-space-between">
+        <div class="d-flex flex-no-wrap justify-space-between ma-3">
           <div>
             <v-card-title>{{ doc._source.meta.title }}</v-card-title>
             <v-card-subtitle>{{ doc._source.meta.author }}</v-card-subtitle>
