@@ -5,8 +5,18 @@
         <div class="d-flex flex-no-wrap justify-space-between ma-3">
           <div>
             <v-card-title>{{ doc._source.meta.title }}</v-card-title>
-            <v-card-subtitle>{{ doc._source.file.filename }}</v-card-subtitle>
-            <v-card-subtitle>{{ doc._source.file.url }}</v-card-subtitle>
+            <v-card-subtitle>
+              <h3>Author</h3>
+              {{ doc._source.meta.author }}
+            </v-card-subtitle>
+            <v-card-subtitle>
+              <h3>File Name</h3>
+              {{ doc._source.file.filename }}
+            </v-card-subtitle>
+            <v-card-subtitle>
+              <h3>URL</h3>
+              {{ doc._source.file.url }}
+            </v-card-subtitle>
             <v-card-subtitle>
               <h3>Highlights</h3>
               <ul>
