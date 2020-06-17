@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  alphalib-web:
+    build:
+      context: .
+    ports:
+    - 5000:3000
+    network_mode: 'bridge'

@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/InsightfulSummer/alphaLib-web.svg?branch=master)](https://travis-ci.com/InsightfulSummer/alphaLib-web)
+[![License](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/InsightfulSummer/alphaLib-web/blob/master/LICENSE)
+
 # alphaLib
 
 > Alpha Library
