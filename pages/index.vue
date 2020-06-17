@@ -54,9 +54,6 @@ export default {
       suggestions: null
     }
   },
-  mounted() {
-    console.log(this.$router)
-  },
   computed: {
     hits() {
       if (this.suggestions === null) return []

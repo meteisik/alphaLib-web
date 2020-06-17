@@ -61,9 +61,6 @@ export default {
       })
     return { search: res }
   },
-  mounted() {
-    console.log(this.$router)
-  },
   data() {
     return {
       search: null
