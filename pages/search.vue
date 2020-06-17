@@ -5,10 +5,10 @@
         <div class="d-flex flex-no-wrap justify-space-between ma-3">
           <div>
             <v-card-title>{{ doc._source.meta.title }}</v-card-title>
-            <v-card-subtitle>{{ doc._source.meta.author }}</v-card-subtitle>
             <v-card-subtitle>{{ doc._source.file.filename }}</v-card-subtitle>
             <v-card-subtitle>{{ doc._source.file.url }}</v-card-subtitle>
             <v-card-subtitle>
+              <h3>Highlights</h3>
               <ul>
                 <li
                   v-for="phrase in doc.highlight.content"
