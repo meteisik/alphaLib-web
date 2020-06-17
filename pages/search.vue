@@ -6,10 +6,6 @@
           <div>
             <v-card-title>{{ doc._source.meta.title }}</v-card-title>
             <v-card-subtitle>{{ doc._source.meta.author }}</v-card-subtitle>
-            <v-card-subtitle>{{ str }}</v-card-subtitle>
-            <v-card-subtitle>{{ str }}</v-card-subtitle>
-            <v-card-subtitle>{{ str }}</v-card-subtitle>
-            <v-card-subtitle>{{ str }}</v-card-subtitle>
             <v-card-subtitle>{{ doc._source.file.filename }}</v-card-subtitle>
             <v-card-subtitle>{{ doc._source.file.url }}</v-card-subtitle>
             <v-card-subtitle>
@@ -33,8 +29,6 @@ export default {
   name: 'Search',
   layout: 'search',
   async asyncData({ query, $axios }) {
-    const str = 'hello'
-    console.log(str)
     const q = query.q
     const res = await $axios
       .post('/api/literature/_search', {
