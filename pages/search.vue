@@ -5,6 +5,11 @@
         <div class="d-flex flex-no-wrap justify-space-between">
           <div>
             <v-card-title>{{ doc._source.meta.title }}</v-card-title>
+            <v-card-subtitle>{{ doc._source.meta.author }}</v-card-subtitle>
+            <v-card-subtitle>{{ str }}</v-card-subtitle>
+            <v-card-subtitle>{{ str }}</v-card-subtitle>
+            <v-card-subtitle>{{ str }}</v-card-subtitle>
+            <v-card-subtitle>{{ str }}</v-card-subtitle>
             <v-card-subtitle>{{ doc._source.file.filename }}</v-card-subtitle>
             <v-card-subtitle>{{ doc._source.file.url }}</v-card-subtitle>
             <v-card-subtitle>
@@ -28,6 +33,8 @@ export default {
   name: 'Search',
   layout: 'search',
   async asyncData({ query, $axios }) {
+    const str = 'hello'
+    console.log(str)
     const q = query.q
     const res = await $axios
       .post('/api/literature/_search', {
@@ -47,7 +54,7 @@ export default {
           pre_tags: ['<mark>'],
           post_tags: ['</mark>'],
           fields: {
-            content: { number_of_fragments: 5 }
+            content: { number_of_fragments: 10 }
           }
         }
       })
