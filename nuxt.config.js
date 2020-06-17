@@ -48,13 +48,11 @@ export default {
     // Doc: https://github.com/nuxt-community/stylelint-module
     '@nuxtjs/stylelint-module',
     '@nuxtjs/vuetify',
-    [
-      '@nuxtjs/google-analytics',
-      {
-        id: 'UA-169820911-1'
-      }
-    ]
+    '@nuxtjs/google-analytics'
   ],
+  googleAnalytics: {
+    id: 'UA-169820911-1'
+  },
   proxy: {
     '/api/': {
       target: 'http://sts2944.cloud.csd.uwo.ca:5001',
