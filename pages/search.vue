@@ -59,7 +59,6 @@
 <script>
 export default {
   name: 'Search',
-  layout: 'search',
   async asyncData({ query, $axios }) {
     const q = query.q
     const res = await $axios
@@ -94,11 +93,10 @@ export default {
       })
     return { search: res }
   },
-  data() {
-    return {
-      search: null
-    }
-  },
+  layout: 'search',
+  data: () => ({
+    show: false
+  }),
   computed: {
     q() {
       return this.$route.query.q
