@@ -8,25 +8,11 @@
               <v-list-item :key="item.title">
                 <template v-slot:default="{ active }">
                   <v-list-item-content>
-                    <v-card-title>{{ doc._source.meta.title }}</v-card-title>
-                    <v-card-subtitle>
-                      {{ doc._source.meta.author }}
-                    </v-card-subtitle>
-                    <v-card-subtitle>
-                      {{ doc._source.file.filename }}
-                    </v-card-subtitle>
-                    <v-card-subtitle>
-                      {{ doc._source.file.url }}
-                    </v-card-subtitle>
-                    <v-card-subtitle>
-                      <ul>
-                        <li
-                          v-for="phrase in doc.highlight.content"
-                          :key="phrase"
-                          v-html="phrase"
-                        ></li>
-                      </ul>
-                    </v-card-subtitle>
+                    <v-list-item-title v-text="item.title">
+                      {{ doc._source.meta.title }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle class="text--primary">
+                    </v-list-item-subtitle>
                   </v-list-item-content>
                   <v-list-item-action>
                     <v-list-item-action-text v-text="item.action">
