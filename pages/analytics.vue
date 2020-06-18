@@ -1,20 +1,50 @@
 <template>
   <div>
-    Sum of all words --> {{ allWords }} <br />
-    <h1>Hello There</h1>
+    <div>
+      <p>
+        <!-- This line works fine, I can retrieve information nicely -->
+        {{ term_vectors[0].term_vectors.content.field_statistics.sum_doc_freq }}
+      </p>
+    </div>
+    <!-- whenever I use term_vectors or docs here, errors happen -->
+    <v-data-table :items="words" :headers="headers">
+      <template #item.name="{item}"> {{ item.name }} is the name </template>
+      <template #item.wordCount="{item}">
+        {{ item.wordCount }}
+      </template>
+    </v-data-table>
   </div>
 </template>
 
 <script>
-function wordCount(array1) {
-  let words = 0
-  for (let i = 0; i < array1.length; i++) {
-    words += array1[i].term_vectors.content.field_statistics.sum_doc_freq
-  }
-  return words
-}
 export default {
   name: 'Analytics',
+  computed: {
+    headers() {
+      return [
+        {
+          text: 'Name',
+          value: 'name'
+        },
+        {
+          text: 'Word Count',
+          value: 'wordCount'
+        }
+      ]
+    },
+    words() {
+      return [
+        {
+          name: 'testName',
+          wordCount: '25'
+        },
+        {
+          name: 'testName2',
+          wordCount: '25000'
+        }
+      ]
+    }
+  },
   async asyncData({ query, $axios }) {
     let match = { match_all: {} }
     if (query.q)
@@ -60,10 +90,8 @@ export default {
         console.log(e)
         return {}
       })
-    // const array1 = termVectors.docs[0].term_vectors.content
-    const array1 = termVectors.docs
-    const allWords = wordCount(array1)
-    return { docs, term_vectors: termVectors.docs, allWords }
+    // console.log(termVectors.docs[4].term_vectors.content.field_statistics)
+    return { docs, term_vectors: termVectors.docs }
   }
 }
 </script>
