@@ -6,4 +6,10 @@ services:
       context: .
     ports:
     - 5000:3000
-    network_mode: 'bridge'
+    networks:
+      - default
+
+networks:
+  default:
+    external:
+      name: 'elasticsearch_elastic'
