@@ -1,30 +1,52 @@
 <template>
   <v-row align="start" justify="start" no-gutters>
     <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="12" md="4">
-      <v-card color="primary" dark hover>
-        <div class="d-flex flex-no-wrap justify-space-between ma-3">
-          <div>
-            <v-card-title>{{ doc._source.meta.title }}</v-card-title>
-            <v-card-subtitle>
-              {{ doc._source.meta.author }}
-            </v-card-subtitle>
-            <v-card-subtitle>
-              {{ doc._source.file.filename }}
-            </v-card-subtitle>
-            <v-card-subtitle>
-              {{ doc._source.file.url }}
-            </v-card-subtitle>
-            <v-card-subtitle>
-              <ul>
-                <li
-                  v-for="phrase in doc.highlight.content"
-                  :key="phrase"
-                  v-html="phrase"
-                ></li>
-              </ul>
-            </v-card-subtitle>
-          </div>
-        </div>
+      <v-card color="primary" hover>
+        <v-list two-line>
+          <v-list-item-group v-model="selected" active-class="pink--text">
+            <template v-for="(item, index) in items">
+              <v-list-item :key="item.title">
+                <template v-slot:default="{ active }">
+                  <v-list-item-content>
+                    <v-card-title>{{ doc._source.meta.title }}</v-card-title>
+                    <v-card-subtitle>
+                      {{ doc._source.meta.author }}
+                    </v-card-subtitle>
+                    <v-card-subtitle>
+                      {{ doc._source.file.filename }}
+                    </v-card-subtitle>
+                    <v-card-subtitle>
+                      {{ doc._source.file.url }}
+                    </v-card-subtitle>
+                    <v-card-subtitle>
+                      <ul>
+                        <li
+                          v-for="phrase in doc.highlight.content"
+                          :key="phrase"
+                          v-html="phrase"
+                        ></li>
+                      </ul>
+                    </v-card-subtitle>
+                  </v-list-item-content>
+                  <v-list-item-action>
+                    <v-list-item-action-text v-text="item.action">
+                    </v-list-item-action-text>
+                    <v-icon v-if="!active" color="grey lighten-1">
+                      star_border
+                    </v-icon>
+                    <v-icon v-else color="yellow">
+                      star
+                    </v-icon>
+                  </v-list-item-action>
+                </template>
+              </v-list-item>
+              <v-divider
+                v-if="index + 1 < items.length"
+                :key="index"
+              ></v-divider>
+            </template>
+          </v-list-item-group>
+        </v-list>
       </v-card>
     </v-col>
   </v-row>
