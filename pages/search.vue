@@ -2,7 +2,7 @@
   <v-row align="start" justify="start" no-gutters>
     <!-- Used md="9" for 9-column width of the v-col -->
     <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="12" md="9">
-      <v-card max-width="1000" class="mx-auto">
+      <v-card max-width="1000" class="mx-auto" hover>
         <v-list two-line>
           <v-list-item>
             <v-list-item-content>
@@ -40,6 +40,12 @@
           </v-list-item>
         </v-list>
       </v-card>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
     </v-col>
   </v-row>
 </template>
