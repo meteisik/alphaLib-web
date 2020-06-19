@@ -2,23 +2,30 @@
   <v-row align="start" justify="start" no-gutters>
     <!-- Used md="9" for 9-column width of the v-col -->
     <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="12" md="9">
-      <v-card class="mx-md-10 my-md-1">
-        <div class="d-flex flex-no-wrap justify-space-between">
-          <div>
-            <!-- Used pb-md-0 for removing margins from bottom in md screen -->
-            <v-card-subtitle class="pb-md-0">
-              {{ doc._source.file.filename }}
-            </v-card-subtitle>
-            <!-- Used pt-md-0 for removing margins from top in md screen -->
-            <!-- Used color: blue for blue color -->
-            <v-card-title style="color: blue;" class="pt-md-0">
-              {{ doc._source.meta.title }}
-            </v-card-title>
-            <!-- Used pb-md-0 for removing margins from bottom in md screen -->
-            <v-card-subtitle class="pb-md-0">
-              {{ doc._source.file.url }}
-            </v-card-subtitle>
-            <v-card-subtitle>
+      <v-card max-width="1000" class="mx-auto">
+        <v-list two-line>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-subtitle>
+                {{ doc._source.file.filename }}
+              </v-list-item-subtitle>
+              <v-list-item-title style="color: blue;">
+                {{ doc._source.meta.title }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ doc._source.meta.author }}
+              </v-list-item-subtitle>
+
+              <v-list-item-subtitle>{{
+                doc._source.file.url
+              }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+
+          <v-divider inset></v-divider>
+
+          <v-list-item>
+            <v-list-item-content>
               <ul>
                 <li
                   v-for="phrase in doc.highlight.content"
@@ -26,31 +33,12 @@
                   v-html="phrase"
                 ></li>
               </ul>
-            </v-card-subtitle>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="show = !show">
-                <v-icon>{{
-                  show ? 'mdi-chevron-up' : 'mdi-chevron-down'
-                }}</v-icon>
-              </v-btn>
-            </v-card-actions>
-            <v-expand-transition>
-              <div v-show="show">
-                <v-divider></v-divider>
-                <v-card-subtitle>
-                  <ul>
-                    <li
-                      v-for="phrase in doc.highlight.content"
-                      :key="phrase"
-                      v-html="phrase"
-                    ></li>
-                  </ul>
-                </v-card-subtitle>
+              <div>
+                <v-btn small color="primary">Visit</v-btn>
               </div>
-            </v-expand-transition>
-          </div>
-        </div>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
       </v-card>
     </v-col>
   </v-row>
