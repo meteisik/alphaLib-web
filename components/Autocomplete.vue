@@ -1,54 +1,74 @@
 <template>
-  <v-row align="center" justify="center">
-    <v-col cols="12" class="mt-10">
-      <div class="text-center">
-        <logo />
-        <vuetify-logo />
-      </div>
-    </v-col>
-    <v-col cols="6" align-self="center" class="text-center">
-      <Autocomplete />
-      <v-btn link :to="'/search?q=' + search" blo>Search</v-btn>
-    </v-col>
-  </v-row>
+  <v-autocomplete
+    v-model="query"
+    :search-input.sync="search"
+    :items="hits"
+    :loading="isLoading"
+    :outlined="!solo"
+    :solo="solo"
+    clearable
+    rounded
+    single-line
+    auto-select-first
+    autofocus
+    cache-items
+    full-width
+    prepend-inner-icon="mdi-magnify"
+    color="primary"
+    hide-no-data
+    hide-selected
+    item-text="_source.path.real"
+    item-value="_source.path.virtual"
+    placeholder="The meaning of life..."
+    return-object
+    @keyup.enter="doSearch"
+  ></v-autocomplete>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-import VuetifyLogo from '~/components/VuetifyLogo.vue'
-import Autocomplete from '~/components/Autocomplete.vue'
-
 export default {
-  components: {
-    Logo,
-    VuetifyLogo,
-    Autocomplete
-  },
+  name: 'HitAutoComplete',
   data() {
     return {
       isLoading: false,
       solo: false,
       query: '',
       search: '',
-      suggestions: null
+      suggestions: null,
+      route: ''
     }
   },
   computed: {
     hits() {
-      if (this.suggestions === null) return []
+      if (this.suggestions === null) return ['Not Specified']
       if (Object.keys(this.suggestions).includes('hits'))
         if (Object.keys(this.suggestions.hits).includes('hits'))
+          // console.log(this.suggestions.hits.hits)
           return this.suggestions.hits.hits
       return []
     }
   },
   watch: {
     search(val) {
-      console.log(val)
+      console.log('from hitauto' + val)
       this.querySuggestions(val)
+    },
+    $route(to, from) {
+      // react to route changes...
+      console.log('to' + to)
+      console.log('from' + from)
+    },
+    route() {
+      this.searchUp(this.$route.params.search)
     }
   },
   methods: {
+    // //objectParse(array) {
+    // for (let index = 0; index < array.length; index++) {
+    //   const element = array[index];
+    //   console.log(array[index]);
+    // }
+    // },
     async lookUp(el) {
       const q = this.query
       const res = await this.$axios.post('/api/literature/_search', {
@@ -86,6 +106,9 @@ export default {
           }
         })
         .then((res) => {
+          // let string = JSON.stringify(res.data.hits.hits.highlight)
+          console.log(res.data.hits)
+          this.items = res.data.hits
           return res.data
         })
         .catch((e) => {
@@ -97,6 +120,7 @@ export default {
     },
     doSearch() {
       this.$router.push('/search?q=' + this.search)
+      this.route = '/search?q=' + this.search
     }
   }
 }

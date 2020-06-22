@@ -40,7 +40,7 @@
       <!--      </v-btn>-->
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-text-field
+      <!-- <v-text-field
         v-model="search"
         :loading="isLoading"
         :outlined="!solo"
@@ -52,7 +52,8 @@
         cache-items
         prepend-inner-icon="mdi-magnify"
         placeholder="The meaning of life..."
-      ></v-text-field>
+      ></v-text-field> -->
+      <Autocomplete />
       <v-spacer />
       <v-btn icon @click.stop="dark = !dark">
         <v-icon>mdi-{{ `brightness-${dark ? '5' : '4'}` }}</v-icon>
@@ -94,7 +95,12 @@
 </template>
 
 <script>
+import Autocomplete from '~/components/Autocomplete.vue'
+
 export default {
+  components: {
+    Autocomplete
+  },
   name: 'SearchLayout',
   data() {
     return {
