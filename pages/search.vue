@@ -41,11 +41,6 @@
         </v-list>
       </v-card>
       <v-divider></v-divider>
-      <v-divider></v-divider>
-      <v-divider></v-divider>
-      <v-divider></v-divider>
-      <v-divider></v-divider>
-      <v-divider></v-divider>
     </v-col>
   </v-row>
 </template>
