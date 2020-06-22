@@ -1,48 +1,79 @@
 <template>
   <div>
     <div>
-      <p>
-        <!-- This line works fine, I can retrieve information nicely -->
-        {{ term_vectors[0].term_vectors.content.field_statistics.sum_doc_freq }}
-      </p>
+      <input
+        type="text"
+        v-model="idInput"
+        placeholder="doc number"
+        @keydown.enter="findIdIndex(term_vectors)"
+      />
     </div>
-    <!-- whenever I use term_vectors or docs here, errors happen -->
-    <v-data-table :items="words" :headers="headers">
-      <template #item.name="{item}"> {{ item.name }} is the name </template>
-      <template #item.wordCount="{item}">
-        {{ item.wordCount }}
-      </template>
-    </v-data-table>
+    <p>{{ idInput }}</p>
+    <div v-if="docIndex != -1">
+      <v-data-table
+        :headers="headers"
+        :items="tableData(term_vectors[docIndex])"
+        multi-sort
+      ></v-data-table>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'Analytics',
+  data() {
+    return {
+      docIds: [],
+      idInput: 'ID here',
+      docIndex: -1, // impossible index
+      headers: [
+        {
+          text: 'Term',
+          value: 'term'
+        },
+        {
+          text: 'Frequency',
+          value: 'freq'
+        }
+      ]
+    }
+  },
   computed: {
-    headers() {
-      return [
-        {
-          text: 'Name',
-          value: 'name'
-        },
-        {
-          text: 'Word Count',
-          value: 'wordCount'
+    findIdIndex() {
+      return (terms) => {
+        if (this.docIds.length === 0) {
+          for (let i = 0; i < terms.length; i++) {
+            this.docIds.push(terms[i]._id)
+          }
         }
-      ]
+        for (let i = 0; i < this.docIds.length; i++) {
+          if (this.docIds[i] === this.idInput) {
+            this.docIndex = i
+          }
+        }
+      }
     },
-    words() {
-      return [
-        {
-          name: 'testName',
-          wordCount: '25'
-        },
-        {
-          name: 'testName2',
-          wordCount: '25000'
+    tableData() {
+      return (document) => {
+        // Getting the terms object
+        const terms = document.term_vectors.content.terms
+        // Turning the object into an array
+        const termsList = Object.keys(terms)
+
+        // Building the result array
+        const result = []
+        for (const t of termsList) {
+          result.push({
+            term: t,
+            freq: terms[t].term_freq
+          })
         }
-      ]
+        // Sort by frequency and return the result
+        return result.sort((a, b) => {
+          return a.freq < b.freq
+        })
+      }
     }
   },
   async asyncData({ query, $axios }) {
@@ -90,8 +121,17 @@ export default {
         console.log(e)
         return {}
       })
-    // console.log(termVectors.docs[4].term_vectors.content.field_statistics)
     return { docs, term_vectors: termVectors.docs }
+  },
+  methods: {
+    TriggerFunction() {
+      this.$router.push({
+        name: 'doc',
+        params: {
+          id: this.idInput
+        }
+      })
+    }
   }
 }
 </script>
