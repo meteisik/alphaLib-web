@@ -1,9 +1,10 @@
 <template>
   <div>
     <h1>document ID: {{ $route.params.id }}</h1>
-    <p>index: {{ findIdIndex(term_vectors) }}</p>
+    <p>index in term_vectors: {{ findIdIndex(term_vectors) }}</p>
+    <p>index in docs: {{ findDisplayIndex(docs) }}</p>
     <div class="documentText">
-      {{ docs[docIndex]._source.content }}
+      {{ docs[displayIndex]._source.content }}
     </div>
     <div class="documentFreq">
       <v-data-table
@@ -21,8 +22,10 @@ export default {
   data() {
     return {
       docIds: [],
+      displayIds: [],
       idInput: 'ID here',
       docIndex: 0, // impossible index
+      displayIndex: 0,
       headers: [
         {
           text: 'Term',
@@ -36,6 +39,21 @@ export default {
     }
   },
   computed: {
+    findDisplayIndex() {
+      return (docs) => {
+        if (this.displayIds.length === 0) {
+          for (let i = 0; i < docs.length; i++) {
+            this.displayIds.push(docs[i]._id)
+          }
+        }
+        for (let i = 0; i < this.displayIds.length; i++) {
+          if (this.displayIds[i] === this.$route.params.id) {
+            this.displayIndex = i
+          }
+        }
+        return this.displayIndex
+      }
+    },
     findIdIndex() {
       return (terms) => {
         if (this.docIds.length === 0) {
@@ -118,6 +136,7 @@ export default {
         console.log(e)
         return {}
       })
+    console.log(docs)
     return { docs, term_vectors: termVectors.docs }
   }
 }
