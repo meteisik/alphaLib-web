@@ -41,7 +41,7 @@ export default {
   async asyncData({ query, $axios }) {
     const q = query.q;
     console.log(q);
-    const postData = (!q || q === "null") ? {} : {
+    const postData = (!q || q === "null") ? {size: 10000} : {
         explain: true,
         sort: ['_score'],
         _source: ['meta', 'file', 'path'],
