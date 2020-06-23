@@ -1,15 +1,11 @@
 <template>
   <div>
-    <div>
-      <input
-        type="text"
-        v-model="idInput"
-        placeholder="doc number"
-        @keydown.enter="findIdIndex(term_vectors)"
-      />
+    <h1>document ID: {{ $route.params.id }}</h1>
+    <p>index: {{ findIdIndex(term_vectors) }}</p>
+    <div class="documentText">
+      {{ docs[docIndex]._source.content }}
     </div>
-    <p>{{ idInput }}</p>
-    <div v-if="docIndex != -1">
+    <div class="documentFreq">
       <v-data-table
         :headers="headers"
         :items="tableData(term_vectors[docIndex])"
@@ -26,7 +22,7 @@ export default {
     return {
       docIds: [],
       idInput: 'ID here',
-      docIndex: -1, // impossible index
+      docIndex: 0, // impossible index
       headers: [
         {
           text: 'Term',
@@ -48,10 +44,11 @@ export default {
           }
         }
         for (let i = 0; i < this.docIds.length; i++) {
-          if (this.docIds[i] === this.idInput) {
+          if (this.docIds[i] === this.$route.params.id) {
             this.docIndex = i
           }
         }
+        return this.docIndex
       }
     },
     tableData() {
@@ -85,7 +82,7 @@ export default {
     const docs = await $axios
       .post('/api/literature/_search', {
         sort: ['_score'],
-        _source: ['meta'],
+        _source: ['meta', 'content'],
         query: match,
         highlight: {
           type: 'unified',
@@ -122,18 +119,20 @@ export default {
         return {}
       })
     return { docs, term_vectors: termVectors.docs }
-  },
-  methods: {
-    TriggerFunction() {
-      this.$router.push({
-        name: 'doc',
-        params: {
-          id: this.idInput
-        }
-      })
-    }
   }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.documentText {
+  border-right: 5px solid #07031a;
+  float: left;
+  width: 50%;
+  box-sizing: border-box;
+}
+.documentFreq {
+  float: left;
+  width: 50%;
+  box-sizing: border-box;
+}
+</style>
