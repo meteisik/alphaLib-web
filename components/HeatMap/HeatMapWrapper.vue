@@ -95,7 +95,7 @@ export default {
   },
   computed: {
     heatmapData() {
-      // for each document and each query from $store.state.searchQueries
+      // TODO: for each document and each query from $store.state.searchQueries
       return [
         {
           x: 'doc1',
