@@ -37,10 +37,8 @@
 <script>
 export default {
   name: 'Documents',
-  layout: 'documents',
   async asyncData({ query, $axios }) {
     const q = query.q
-    console.log(q)
     const postData =
       !q || q === 'null'
         ? { size: 10000 }
@@ -65,7 +63,6 @@ export default {
               }
             }
           }
-    console.log(postData)
 
     const res = await $axios
       .post('/api/literature/_search', postData)
@@ -73,8 +70,6 @@ export default {
         return res.data
       })
       .catch((e) => {
-        // eslint-disable-next-line no-console
-        console.log(e)
         return null
       })
     return { documents: res }

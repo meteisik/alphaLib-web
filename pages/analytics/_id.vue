@@ -44,8 +44,6 @@ export default {
         return res.data.hits.hits
       })
       .catch((e) => {
-        // eslint-disable-next-line no-console
-        console.log(e)
         return []
       })
     const termVectors = await $axios
@@ -60,11 +58,8 @@ export default {
         return res.data
       })
       .catch((e) => {
-        // eslint-disable-next-line no-console
-        console.log(e)
         return {}
       })
-    console.log(docs)
     return { docs, term_vectors: termVectors.docs }
   },
   data() {

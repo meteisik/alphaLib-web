@@ -65,7 +65,6 @@ export default {
   },
   watch: {
     search(val) {
-      console.log(val)
       this.querySuggestions(val)
     }
   },
@@ -110,7 +109,6 @@ export default {
           return res.data
         })
         .catch((e) => {
-          console.log(e)
           return {}
         })
       this.isLoading = false
