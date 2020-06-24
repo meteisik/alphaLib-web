@@ -1,39 +1,49 @@
 <template>
   <v-row align="start" justify="start" no-gutters>
-    <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="7">
-      <v-card
-        class="mx-md-10 my-md-1"
-        flat
-        hover
-        outlined
-        rounded
-        link
-        :to="'docs/' + doc.id"
-      >
-        <v-card-title class="primary--text">
-          {{ doc._source.meta.title }}
-        </v-card-title>
-        <!-- Used pb-md-0 for removing margins from bottom in md screen -->
-        <v-card-subtitle class="pb-md-0">
-          {{ doc._source.file.filename }}
-        </v-card-subtitle>
-        <v-card-text>
-          <ul>
-            <li
-              v-for="phrase in doc.highlight.content"
-              :key="phrase"
-              v-html="phrase"
-            ></li>
-          </ul>
-        </v-card-text>
-      </v-card>
+    <v-col cols="7">
+      <v-row no-gutters>
+        <v-card
+          v-for="(doc, i) in hits"
+          :key="i + '-' + doc._id"
+          class="mb-2 mx-auto"
+          width="100%"
+          flat
+          hover
+          outlined
+          rounded
+          link
+          :to="'docs/' + doc.id"
+        >
+          <v-card-title class="primary--text">
+            {{ doc._source.meta.title }}
+          </v-card-title>
+          <!-- Used pb-md-0 for removing margins from bottom in md screen -->
+          <v-card-subtitle class="pb-md-0">
+            {{ doc._source.file.filename }}
+          </v-card-subtitle>
+          <v-card-text>
+            <ul>
+              <li
+                v-for="phrase in doc.highlight.content"
+                :key="phrase"
+                v-html="phrase"
+              ></li>
+            </ul>
+          </v-card-text>
+        </v-card>
+      </v-row>
+    </v-col>
+    <v-col cols="5">
+      <TheInfoBox></TheInfoBox>
     </v-col>
   </v-row>
 </template>
 
 <script>
+import TheInfoBox from '~/components/InfoBox/TheInfoBox'
 export default {
   name: 'Search',
+  components: { TheInfoBox },
   async asyncData({ query, $axios }) {
     const q = query.q
     const res = await $axios
