@@ -1,13 +1,31 @@
 <template>
   <v-row align="start" justify="start" no-gutters>
-    <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="12" md="4">
-      <v-card color="primary" dark>
-        <div class="d-flex flex-no-wrap justify-space-between">
-          <div>
-            <v-card-title>{{ doc._source.meta.title }}</v-card-title>
-            <v-card-subtitle>{{ doc._source.file.filename }}</v-card-subtitle>
-            <v-card-subtitle>{{ doc._source.file.url }}</v-card-subtitle>
-            <v-card-subtitle>
+    <!-- Used md="9" for 9-column width of the v-col -->
+    <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="12" md="9">
+      <v-card max-width="1000" class="mx-auto" hover outlined>
+        <v-list two-line>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-subtitle>
+                {{ doc._source.file.filename }}
+              </v-list-item-subtitle>
+              <v-list-item-title style="color: blue;">
+                {{ doc._source.meta.title }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ doc._source.meta.author }}
+              </v-list-item-subtitle>
+
+              <v-list-item-subtitle>{{
+                doc._source.file.url
+              }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+
+          <v-divider inset></v-divider>
+
+          <v-list-item>
+            <v-list-item-content>
               <ul>
                 <li
                   v-for="phrase in doc.highlight.content"
@@ -15,10 +33,14 @@
                   v-html="phrase"
                 ></li>
               </ul>
-            </v-card-subtitle>
-          </div>
-        </div>
+              <div>
+                <v-btn small color="primary">Visit</v-btn>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
       </v-card>
+      <v-divider></v-divider>
     </v-col>
   </v-row>
 </template>
@@ -26,7 +48,6 @@
 <script>
 export default {
   name: 'Search',
-  layout: 'search',
   async asyncData({ query, $axios }) {
     const q = query.q
     const res = await $axios
@@ -61,11 +82,10 @@ export default {
       })
     return { search: res }
   },
-  data() {
-    return {
-      search: null
-    }
-  },
+  layout: 'search',
+  data: () => ({
+    show: false
+  }),
   computed: {
     q() {
       return this.$route.query.q
