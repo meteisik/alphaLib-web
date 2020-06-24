@@ -26,10 +26,14 @@
                   v-html="phrase"
                 ></li>
               </ul>
-            </v-card-subtitle>
-          </div>
-        </div>
+              <div>
+                <v-btn small color="primary">Visit</v-btn>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
       </v-card>
+      <v-divider></v-divider>
     </v-col>
   </v-row>
 </template>
@@ -37,7 +41,6 @@
 <script>
 export default {
   name: 'Search',
-  layout: 'search',
   async asyncData({ query, $axios }) {
     const q = query.q
     const res = await $axios
@@ -72,11 +75,10 @@ export default {
       })
     return { search: res }
   },
-  data() {
-    return {
-      search: null
-    }
-  },
+  layout: 'search',
+  data: () => ({
+    show: false
+  }),
   computed: {
     q() {
       return this.$route.query.q
