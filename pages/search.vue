@@ -36,6 +36,7 @@
       <TheInfoBox class="mb-2" max-width="90%" :hover="false"></TheInfoBox>
       <HeatMapWrapper
         :id="charts.heatmap.id"
+        class="mb-2"
         :div-id="charts.heatmap.divId"
         :svg-id="charts.heatmap.svgId"
         :hover="false"
@@ -45,6 +46,18 @@
         :chart-height="charts.heatmap.height"
         max-width="90%"
       ></HeatMapWrapper>
+      <GraphWrapper
+        :id="charts.conceptmap.id"
+        class="mb-2"
+        :div-id="charts.conceptmap.divId"
+        :svg-id="charts.conceptmap.svgId"
+        :hover="false"
+        :label="charts.conceptmap.label"
+        :dataset="hits"
+        :chart-width="charts.conceptmap.width"
+        :chart-height="charts.conceptmap.height"
+        max-width="90%"
+      ></GraphWrapper>
     </v-col>
   </v-row>
 </template>
@@ -52,9 +65,10 @@
 <script>
 import TheInfoBox from '~/components/InfoBox/TheInfoBox'
 import HeatMapWrapper from '~/components/HeatMap/HeatMapWrapper'
+import GraphWrapper from '~/components/ConceptMap/GraphWrapper'
 export default {
   name: 'Search',
-  components: { HeatMapWrapper, TheInfoBox },
+  components: { GraphWrapper, HeatMapWrapper, TheInfoBox },
   async asyncData({ query, $axios }) {
     const q = query.q
     const res = await $axios
@@ -98,6 +112,14 @@ export default {
         label: 'Tiles',
         width: 500,
         height: 100
+      },
+      conceptmap: {
+        id: 'conceptmap',
+        divId: 'conceptmap-div',
+        svgId: 'conceptmap-chart-svg-element',
+        label: 'Concept Map',
+        width: 500,
+        height: 700
       }
     }
   }),
@@ -130,6 +152,17 @@ export default {
         document
           .getElementById(this.charts.heatmap.svgId)
           .setAttribute('height', this.charts.heatmap.height)
+      }
+
+      const conceptDiv = document.getElementById(this.charts.conceptmap.divId)
+      if (conceptDiv) {
+        this.charts.conceptmap.width = conceptDiv.clientWidth - 30
+        document
+          .getElementById(this.charts.conceptmap.svgId)
+          .setAttribute('width', this.charts.conceptmap.width)
+        document
+          .getElementById(this.charts.conceptmap.svgId)
+          .setAttribute('height', this.charts.conceptmap.height)
       }
     }
   }
