@@ -1,8 +1,15 @@
 <template>
   <v-row align="start" justify="start" no-gutters>
-    <!-- Used md="9" for 9-column width of the v-col -->
-    <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="12" md="9">
-      <v-card class="mx-md-10 my-md-1">
+    <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="7">
+      <v-card
+        class="mx-md-10 my-md-1"
+        flat
+        hover
+        outlined
+        rounded
+        link
+        :to="'docs/' + doc.id"
+      >
         <v-card-title class="primary--text">
           {{ doc._source.meta.title }}
         </v-card-title>
@@ -19,10 +26,6 @@
             ></li>
           </ul>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn small outlined color="primary">Visit</v-btn>
-        </v-card-actions>
       </v-card>
     </v-col>
   </v-row>
