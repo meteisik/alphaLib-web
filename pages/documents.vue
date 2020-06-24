@@ -39,31 +39,34 @@ export default {
   name: 'Documents',
   layout: 'documents',
   async asyncData({ query, $axios }) {
-    const q = query.q;
-    console.log(q);
-    const postData = (!q || q === "null") ? {size: 10000} : {
-        explain: true,
-        sort: ['_score'],
-        _source: ['meta', 'file', 'path'],
-        query: {
-          multi_match: {
-            query: q,
-            type: 'bool_prefix',
-            fields: ['meta', 'content']
+    const q = query.q
+    console.log(q)
+    const postData =
+      !q || q === 'null'
+        ? { size: 10000 }
+        : {
+            explain: true,
+            sort: ['_score'],
+            _source: ['meta', 'file', 'path'],
+            query: {
+              multi_match: {
+                query: q,
+                type: 'bool_prefix',
+                fields: ['meta', 'content']
+              }
+            },
+            highlight: {
+              type: 'unified',
+              order: 'score',
+              pre_tags: ['<mark>'],
+              post_tags: ['</mark>'],
+              fields: {
+                content: { number_of_fragments: 5 }
+              }
+            }
           }
-        },
-        highlight: {
-          type: 'unified',
-          order: 'score',
-          pre_tags: ['<mark>'],
-          post_tags: ['</mark>'],
-          fields: {
-            content: { number_of_fragments: 5 }
-          }
-        }
-      };
-    console.log(postData);
-    
+    console.log(postData)
+
     const res = await $axios
       .post('/api/literature/_search', postData)
       .then((res) => {

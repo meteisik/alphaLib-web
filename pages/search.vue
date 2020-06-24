@@ -3,37 +3,33 @@
     <!-- Used md="9" for 9-column width of the v-col -->
     <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="12" md="9">
       <v-card class="mx-md-10 my-md-1">
-        <div class="d-flex flex-no-wrap justify-space-between">
-          <div>
-            <!-- Used pb-md-0 for removing margins from bottom in md screen -->
-            <v-card-subtitle class="pb-md-0">
-              {{ doc._source.file.filename }}
-            </v-card-subtitle>
-            <!-- Used pt-md-0 for removing margins from top in md screen -->
-            <!-- Used color: blue for blue color -->
-            <v-card-title style="color: blue;" class="pt-md-0">
-              {{ doc._source.meta.title }}
-            </v-card-title>
-            <!-- Used pb-md-0 for removing margins from bottom in md screen -->
-            <v-card-subtitle class="pb-md-0">
-              {{ doc._source.file.url }}
-            </v-card-subtitle>
-            <v-card-subtitle>
-              <ul>
-                <li
-                  v-for="phrase in doc.highlight.content"
-                  :key="phrase"
-                  v-html="phrase"
-                ></li>
-              </ul>
-              <div>
-                <v-btn small color="primary">Visit</v-btn>
-              </div>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
+        <!-- Used pb-md-0 for removing margins from bottom in md screen -->
+        <v-card-subtitle class="pb-md-0">
+          {{ doc._source.file.filename }}
+        </v-card-subtitle>
+        <!-- Used pt-md-0 for removing margins from top in md screen -->
+        <!-- Used color: blue for blue color -->
+        <v-card-title style="color: blue;" class="pt-md-0">
+          {{ doc._source.meta.title }}
+        </v-card-title>
+        <!-- Used pb-md-0 for removing margins from bottom in md screen -->
+        <v-card-subtitle class="pb-md-0">
+          {{ doc._source.file.url }}
+        </v-card-subtitle>
+        <v-card-text>
+          <ul>
+            <li
+              v-for="phrase in doc.highlight.content"
+              :key="phrase"
+              v-html="phrase"
+            ></li>
+          </ul>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn small outlined color="primary">Visit</v-btn>
+        </v-card-actions>
       </v-card>
-      <v-divider></v-divider>
     </v-col>
   </v-row>
 </template>
