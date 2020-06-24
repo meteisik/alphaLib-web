@@ -1,23 +1,21 @@
 <template>
-  <v-row align="start" justify="start" no-gutters>
-    <v-col cols="7">
+  <v-row align="start" justify="center" no-gutters>
+    <v-col cols="7" align-self="start">
       <v-row no-gutters>
         <v-card
           v-for="(doc, i) in hits"
           :key="i + '-' + doc._id"
-          class="mb-2 mx-auto"
+          class="mx-auto mb-2"
           width="100%"
           flat
           hover
-          outlined
           rounded
           link
-          :to="'docs/' + doc.id"
+          :to="'docs/' + doc._id"
         >
           <v-card-title class="primary--text">
             {{ doc._source.meta.title }}
           </v-card-title>
-          <!-- Used pb-md-0 for removing margins from bottom in md screen -->
           <v-card-subtitle class="pb-md-0">
             {{ doc._source.file.filename }}
           </v-card-subtitle>
@@ -29,21 +27,34 @@
                 v-html="phrase"
               ></li>
             </ul>
+            {{ doc._source.path.real }}
           </v-card-text>
         </v-card>
       </v-row>
     </v-col>
-    <v-col cols="5">
-      <TheInfoBox></TheInfoBox>
+    <v-col cols="5" align-self="start">
+      <TheInfoBox class="mb-2" max-width="90%" :hover="false"></TheInfoBox>
+      <HeatMapWrapper
+        :id="charts.heatmap.id"
+        :div-id="charts.heatmap.divId"
+        :svg-id="charts.heatmap.svgId"
+        :hover="false"
+        :label="charts.heatmap.label"
+        :dataset="hits"
+        :chart-width="charts.heatmap.width"
+        :chart-height="charts.heatmap.height"
+        max-width="90%"
+      ></HeatMapWrapper>
     </v-col>
   </v-row>
 </template>
 
 <script>
 import TheInfoBox from '~/components/InfoBox/TheInfoBox'
+import HeatMapWrapper from '~/components/HeatMap/HeatMapWrapper'
 export default {
   name: 'Search',
-  components: { TheInfoBox },
+  components: { HeatMapWrapper, TheInfoBox },
   async asyncData({ query, $axios }) {
     const q = query.q
     const res = await $axios
@@ -78,7 +89,17 @@ export default {
   },
   layout: 'search',
   data: () => ({
-    show: false
+    // Charts and all of their configurations
+    charts: {
+      heatmap: {
+        id: 'heatmap',
+        divId: 'heatmap-div',
+        svgId: 'heatmap-chart-svg-element',
+        label: 'Tiles',
+        width: 500,
+        height: 100
+      }
+    }
   }),
   computed: {
     q() {
@@ -87,6 +108,29 @@ export default {
     hits() {
       if (this.search === null) return []
       return this.search.hits.hits
+    },
+    heatmapHeight() {
+      return 40 + this.hits.length * 5
+    }
+  },
+  mounted() {
+    this.$store.commit('ADD_QUERY', this.q)
+    this.resize()
+    window.addEventListener('resize', this.resize)
+  },
+  methods: {
+    resize() {
+      const heatDiv = document.getElementById(this.charts.heatmap.divId)
+      if (heatDiv) {
+        this.charts.heatmap.width = heatDiv.clientWidth - 30
+        this.charts.heatmap.height = this.heatmapHeight
+        document
+          .getElementById(this.charts.heatmap.svgId)
+          .setAttribute('width', this.charts.heatmap.width)
+        document
+          .getElementById(this.charts.heatmap.svgId)
+          .setAttribute('height', this.charts.heatmap.height)
+      }
     }
   }
 }

@@ -1,5 +1,14 @@
 <template>
-  <v-card :loading="loading" class="mx-auto" max-width="85%">
+  <!--  TODO: Edit this file -->
+  <v-card
+    class="mx-auto"
+    :loading="loading"
+    :outlined="outlined"
+    :flat="flat"
+    :hover="hover"
+    :rounded="rounded"
+    :max-width="maxWidth"
+  >
     <v-img
       height="250"
       src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
@@ -62,6 +71,28 @@
 <script>
 export default {
   name: 'TheInfoBox',
+  props: {
+    flat: {
+      type: Boolean,
+      default: true
+    },
+    outlined: {
+      type: Boolean,
+      default: true
+    },
+    hover: {
+      type: Boolean,
+      default: true
+    },
+    rounded: {
+      type: Boolean,
+      default: true
+    },
+    maxWidth: {
+      type: String,
+      default: '100%'
+    }
+  },
   data: () => ({
     loading: false,
     selection: 1
