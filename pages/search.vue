@@ -2,45 +2,28 @@
   <v-row align="start" justify="start" no-gutters>
     <!-- Used md="9" for 9-column width of the v-col -->
     <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="12" md="9">
-      <v-card max-width="1000" class="mx-auto" hover outlined>
-        <v-list two-line>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-subtitle>
-                {{ doc._source.file.filename }}
-              </v-list-item-subtitle>
-              <v-list-item-title style="color: blue;">
-                {{ doc._source.meta.title }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ doc._source.meta.author }}
-              </v-list-item-subtitle>
-
-              <v-list-item-subtitle>{{
-                doc._source.file.url
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-
-          <v-divider inset></v-divider>
-
-          <v-list-item>
-            <v-list-item-content>
-              <ul>
-                <li
-                  v-for="phrase in doc.highlight.content"
-                  :key="phrase"
-                  v-html="phrase"
-                ></li>
-              </ul>
-              <div>
-                <v-btn small color="primary">Visit</v-btn>
-              </div>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
+      <v-card class="mx-md-10 my-md-1">
+        <v-card-title class="primary--text">
+          {{ doc._source.meta.title }}
+        </v-card-title>
+        <!-- Used pb-md-0 for removing margins from bottom in md screen -->
+        <v-card-subtitle class="pb-md-0">
+          {{ doc._source.file.filename }}
+        </v-card-subtitle>
+        <v-card-text>
+          <ul>
+            <li
+              v-for="phrase in doc.highlight.content"
+              :key="phrase"
+              v-html="phrase"
+            ></li>
+          </ul>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn small outlined color="primary">Visit</v-btn>
+        </v-card-actions>
       </v-card>
-      <v-divider></v-divider>
     </v-col>
   </v-row>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <input type="text" v-model="idInput" />
+      <input v-model="idInput" type="text" />
       <button @click="onIdInput">CLICK HERE TO SEND REQUEST</button>
     </div>
     <p>{{ idInput }}</p>
