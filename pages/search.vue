@@ -2,6 +2,9 @@
   <v-row align="start" justify="center" no-gutters>
     <v-col cols="7" align-self="start">
       <v-row no-gutters>
+        <div v-if="$fetchState.pending">
+          Fetching with query #{{ $route.query }}...
+        </div>
         <v-card
           v-for="(doc, i) in hits"
           :key="i + '-' + doc._id"
@@ -19,7 +22,7 @@
           <v-card-subtitle class="pb-md-0">
             {{ doc._source.file.filename }}
           </v-card-subtitle>
-          <v-card-text>
+          <v-card-text v-if="doc.highlight">
             <ul>
               <li
                 v-for="phrase in doc.highlight.content"
@@ -30,6 +33,16 @@
             {{ doc._source.path.real }}
           </v-card-text>
         </v-card>
+        <v-col cols="12" align-self="center" class="mx-auto">
+          <v-pagination
+            v-model="page"
+            :circle="paginationCircle"
+            :disabled="paginationDisabled"
+            :length="totalPages"
+            :page="page"
+            :total-visible="10"
+          ></v-pagination>
+        </v-col>
       </v-row>
     </v-col>
     <v-col cols="5" align-self="start">
@@ -69,20 +82,36 @@ import GraphWrapper from '~/components/ConceptMap/GraphWrapper'
 export default {
   name: 'PageSearch',
   components: { GraphWrapper, HeatMapWrapper, TheInfoBox },
-  async asyncData({ query, $axios }) {
-    const q = query.q
-    const res = await $axios
+  async fetch() {
+    // Get query params
+    const q = this.$route.query.q
+    const pageSize = this.$route.query.size || 10
+    const page = this.$route.query.page || 1
+    const offset = pageSize * (page - 1)
+
+    // Building the query
+    // By default (when q is empty), we want to list all documents
+    let match = {
+      match_all: {}
+    }
+    if (q)
+      match = {
+        multi_match: {
+          query: q,
+          type: 'bool_prefix',
+          fields: ['meta', 'content']
+        }
+      }
+
+    // Getting the results based on the query
+    const res = await this.$axios
       .post('/api/literature/_search', {
         explain: true,
         sort: ['_score'],
         _source: ['meta', 'file', 'path'],
-        query: {
-          multi_match: {
-            query: q,
-            type: 'bool_prefix',
-            fields: ['meta', 'content']
-          }
-        },
+        query: match,
+        from: offset,
+        size: pageSize,
         highlight: {
           type: 'unified',
           order: 'score',
@@ -94,15 +123,21 @@ export default {
         }
       })
       .then((res) => {
-        return res.data
+        return res
       })
       .catch((e) => {
         return null
       })
-    return { search: res }
+    // The returned object will be merged with `this.data`
+    this.search = res.data
   },
-  layout: 'search',
   data: () => ({
+    // Search configuration
+    paginationCircle: false,
+    paginationDisabled: false,
+
+    // Search Results
+    search: null,
     // Charts and all of their configurations
     charts: {
       heatmap: {
@@ -127,14 +162,34 @@ export default {
     q() {
       return this.$route.query.q
     },
+    page: {
+      get() {
+        if (this.$route.query.page) return +this.$route.query.page
+        return 1
+      },
+      set(v) {
+        this.$route.query.page = v
+        // todo: put query in the address bar as well and handle this in a better way
+        this.$fetch()
+      }
+    },
+    paginationSize() {
+      if (this.$route.query.size) return +this.$route.query.size
+      return 10
+    },
     hits() {
       if (this.search === null) return []
       return this.search.hits.hits
+    },
+    totalPages() {
+      if (this.search === null) return 0
+      return Math.ceil(this.search.hits.total.value / this.paginationSize)
     },
     heatmapHeight() {
       return 40 + this.hits.length * 5
     }
   },
+  layout: 'search',
   mounted() {
     this.$store.commit('ADD_QUERY', this.q)
     this.resize()
