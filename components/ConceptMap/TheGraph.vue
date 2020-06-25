@@ -136,7 +136,7 @@ export default {
 
     const node = this.svg
       .append('g')
-      .attr('stroke', '#fff')
+      .attr('stroke', 'context-stroke')
       .attr('stroke-width', 1.5)
       .selectAll('circle')
       .data(this.nodes)
