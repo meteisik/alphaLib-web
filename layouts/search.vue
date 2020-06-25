@@ -78,24 +78,15 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-footer :fixed="fixed" app padless>
-      <v-col class="text-center overline" cols="12">
-        &copy; {{ new Date().getFullYear() }} —
-        <a
-          href="http://insight.uwo.ca/"
-          target="_blank"
-          style="text-decoration: none;"
-        >
-          InsightLab
-        </a>
-      </v-col>
-    </v-footer>
+    <TheFooter :fixed="fixed"></TheFooter>
   </v-app>
 </template>
 
 <script>
+import TheFooter from '~/components/TheFooter'
 export default {
   name: 'SearchLayout',
+  components: { TheFooter },
   data() {
     return {
       clipped: true,
