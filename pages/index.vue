@@ -31,7 +31,7 @@
         @keyup.native.enter="doSearch"
       >
       </v-autocomplete>
-      <v-btn link :to="'/search?q=' + search">Search</v-btn>
+      <v-btn link :to="'/docs?q=' + search">Search</v-btn>
     </v-col>
   </v-row>
 </template>
@@ -116,7 +116,7 @@ export default {
       this.suggestions = suggestions
     },
     doSearch() {
-      this.$router.push('/search?q=' + this.search)
+      this.$router.push('/docs?q=' + this.search)
     }
   }
 }
