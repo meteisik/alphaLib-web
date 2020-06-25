@@ -33,7 +33,7 @@
             {{ doc._source.path.real }}
           </v-card-text>
         </v-card>
-        <v-col cols="12" align-self="center" class="mx-auto">
+        <v-col cols="6" align-self="center" class="mx-auto">
           <v-pagination
             v-model="page"
             :circle="paginationCircle"
@@ -42,6 +42,17 @@
             :page="page"
             :total-visible="10"
           ></v-pagination>
+        </v-col>
+        <v-col cols="2">
+          <v-select
+            v-model="paginationSize"
+            :items="[5, 10, 20, 40]"
+            label="Num. of Items"
+            hint="Items per page"
+            persistent-hint
+            dense
+            flat
+          ></v-select>
         </v-col>
       </v-row>
     </v-col>
@@ -127,6 +138,7 @@ export default {
         return res
       })
       .catch((e) => {
+        console.log(e)
         return null
       })
     // The returned object will be merged with `this.data`
@@ -169,15 +181,23 @@ export default {
         return 1
       },
       set(v) {
-        // todo: handle this in a better way
+        // TODO: handle this in a better way
         let path = '/docs?page=' + v + '&size=' + this.paginationSize
         if (this.q) path += '&q=' + this.q
         this.$router.push(path)
       }
     },
-    paginationSize() {
-      if (this.$route.query.size) return +this.$route.query.size
-      return 10
+    paginationSize: {
+      get() {
+        if (this.$route.query.size) return +this.$route.query.size
+        return 10
+      },
+      set(v) {
+        // TODO: handle this in a better way
+        let path = '/docs?page=1' + '&size=' + v
+        if (this.q) path += '&q=' + this.q
+        this.$router.push(path)
+      }
     },
     hits() {
       if (this.search === null) return []
