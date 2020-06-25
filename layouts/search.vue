@@ -53,7 +53,8 @@
         prepend-inner-icon="mdi-magnify"
         placeholder="The meaning of life..."
       ></v-text-field> -->
-      <Autocomplete />
+      <Autocomplete class="mx-auto mt-10" />
+      <!-- <v-btn blo @click="newSearch">Search</v-btn> -->
       <v-spacer />
       <v-btn icon @click.stop="dark = !dark">
         <v-icon>mdi-{{ `brightness-${dark ? '5' : '4'}` }}</v-icon>
@@ -62,6 +63,7 @@
       <!--        <v-icon>mdi-menu</v-icon>-->
       <!--      </v-btn>-->
     </v-app-bar>
+
     <v-content>
       <v-container fluid>
         <nuxt keep-alive :keep-alive-props="{ max: 10 }" />
@@ -98,12 +100,13 @@
 import Autocomplete from '~/components/Autocomplete.vue'
 
 export default {
+  name: 'SearchLayout',
   components: {
     Autocomplete
   },
-  name: 'SearchLayout',
   data() {
     return {
+      button: false,
       clipped: true,
       drawer: false,
       fixed: false,
@@ -143,6 +146,11 @@ export default {
       return []
       // if (this.search === null) return []
       // return this.search.hits.hits
+    }
+  },
+  watch: {
+    route() {
+      this.$router.push('/search?q=' + this.search)
     }
   },
   methods: {

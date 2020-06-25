@@ -8,7 +8,6 @@
     </v-col>
     <v-col cols="6" align-self="center" class="text-center">
       <Autocomplete />
-      <v-btn link :to="'/search?q=' + search" blo>Search</v-btn>
     </v-col>
   </v-row>
 </template>
@@ -24,78 +23,31 @@ export default {
     VuetifyLogo,
     Autocomplete
   },
+  props: {
+    // eslint-disable-next-line vue/require-default-prop
+    search: {
+      type: String
+    },
+    query: {
+      type: String
+    }
+  },
   data() {
     return {
       isLoading: false,
       solo: false,
-      query: '',
-      search: '',
-      suggestions: null
-    }
-  },
-  computed: {
-    hits() {
-      if (this.suggestions === null) return []
-      if (Object.keys(this.suggestions).includes('hits'))
-        if (Object.keys(this.suggestions.hits).includes('hits'))
-          return this.suggestions.hits.hits
-      return []
+      suggestions: null,
+      route: '',
+      button: false
     }
   },
   watch: {
-    search(val) {
-      console.log(val)
-      this.querySuggestions(val)
+    route() {
+      this.searchUp(this.$route.params.search)
     }
   },
   methods: {
-    async lookUp(el) {
-      const q = this.query
-      const res = await this.$axios.post('/api/literature/_search', {
-        explain: true,
-        sort: ['_score'],
-        query: {
-          multi_match: {
-            query: q,
-            type: 'bool_prefix',
-            fields: ['content', 'meta.*']
-          }
-        }
-      })
-      this.search = res.data
-    },
-    async querySuggestions(q) {
-      this.isLoading = true
-      const suggestions = await this.$axios
-        .post('/api/literature/_search', {
-          explain: true,
-          _source: ['path'],
-          query: {
-            multi_match: {
-              query: q,
-              type: 'bool_prefix',
-              fields: ['meta', 'content']
-            }
-          },
-          highlight: {
-            type: 'unified',
-            order: 'score',
-            fields: {
-              content: { number_of_fragments: 200 }
-            }
-          }
-        })
-        .then((res) => {
-          return res.data
-        })
-        .catch((e) => {
-          console.log(e)
-          return {}
-        })
-      this.isLoading = false
-      this.suggestions = suggestions
-    },
-    doSearch() {
+    handleClick(event) {
       this.$router.push('/search?q=' + this.search)
     }
   }

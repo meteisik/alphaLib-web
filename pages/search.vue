@@ -24,9 +24,14 @@
 </template>
 
 <script>
+// import Autocomplete from '~/components/Autocomplete.vue'
+
 export default {
   name: 'Search',
   layout: 'search',
+  components: {
+    // Autocomplete
+  },
   async asyncData({ query, $axios }) {
     const q = query.q
     const res = await $axios
@@ -63,7 +68,9 @@ export default {
   },
   data() {
     return {
-      search: null
+      // eslint-disable-next-line vue/no-dupe-keys
+      search: null,
+      button: false
     }
   },
   computed: {
@@ -73,6 +80,11 @@ export default {
     hits() {
       if (this.search === null) return []
       return this.search.hits.hits
+    }
+  },
+  watch: {
+    route() {
+      this.$router.push('/search?q=' + this.search)
     }
   }
 }
