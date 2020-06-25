@@ -3,7 +3,7 @@
     <v-col cols="7" align-self="start">
       <v-row no-gutters>
         <div v-if="$fetchState.pending">
-          Fetching with query #{{ $route.query }}...
+          Fetching with page query {{ $route.query }}...
         </div>
         <v-card
           v-for="(doc, i) in hits"
@@ -82,11 +82,12 @@ import GraphWrapper from '~/components/ConceptMap/GraphWrapper'
 export default {
   name: 'PageSearch',
   components: { GraphWrapper, HeatMapWrapper, TheInfoBox },
+  watchQuery: true,
   async fetch() {
     // Get query params
-    const q = this.$route.query.q
-    const pageSize = this.$route.query.size || 10
-    const page = this.$route.query.page || 1
+    const q = this.q
+    const pageSize = this.paginationSize
+    const page = this.page
     const offset = pageSize * (page - 1)
 
     // Building the query
@@ -160,7 +161,7 @@ export default {
   }),
   computed: {
     q() {
-      return this.$route.query.q
+      return this.$route.query.q || null
     },
     page: {
       get() {
@@ -168,9 +169,10 @@ export default {
         return 1
       },
       set(v) {
-        this.$route.query.page = v
-        // todo: put query in the address bar as well and handle this in a better way
-        this.$fetch()
+        // todo: handle this in a better way
+        let path = '/search?page=' + v + '&size=' + this.paginationSize
+        if (this.q) path += '&q=' + this.q
+        this.$router.push(path)
       }
     },
     paginationSize() {
@@ -188,6 +190,9 @@ export default {
     heatmapHeight() {
       return 40 + this.hits.length * 5
     }
+  },
+  watch: {
+    '$route.query.page': '$fetch'
   },
   layout: 'search',
   mounted() {
