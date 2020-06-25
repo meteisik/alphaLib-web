@@ -212,7 +212,8 @@ export default {
     }
   },
   watch: {
-    '$route.query.page': '$fetch'
+    '$route.query.page': '$fetch',
+    '$route.query.size': '$fetch'
   },
   layout: 'search',
   mounted() {
