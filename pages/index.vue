@@ -31,7 +31,7 @@
         @keyup.native.enter="doSearch"
       >
       </v-autocomplete>
-      <v-btn link :to="'/search?q=' + search" blo>Search</v-btn>
+      <v-btn link :to="'/search?q=' + search">Search</v-btn>
     </v-col>
   </v-row>
 </template>
@@ -41,6 +41,7 @@ import Logo from '~/components/Logo.vue'
 import VuetifyLogo from '~/components/VuetifyLogo.vue'
 
 export default {
+  name: 'PageIndex',
   components: {
     Logo,
     VuetifyLogo

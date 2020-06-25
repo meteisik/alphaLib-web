@@ -1,16 +1,12 @@
 <template>
   <v-row align="start" justify="start" no-gutters>
-    <!-- Used md="9" for 9-column width of the v-col -->
     <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="12" md="9">
       <v-card class="mx-md-10 my-md-1">
         <div class="d-flex flex-no-wrap justify-space-between">
           <div>
-            <!-- Used pb-md-0 for removing margins from bottom in md screen -->
             <v-card-subtitle class="pb-md-0">
               {{ doc._source.file.filename }}
             </v-card-subtitle>
-            <!-- Used pt-md-0 for removing margins from top in md screen -->
-            <!-- Used color: blue for blue color -->
             <v-card-title style="color: blue;" class="pt-md-0">
               {{ doc._source.meta.title }}
             </v-card-title>
@@ -36,7 +32,7 @@
 
 <script>
 export default {
-  name: 'Documents',
+  name: 'PageDocumentsIndex',
   async asyncData({ query, $axios }) {
     const q = query.q
     const postData =

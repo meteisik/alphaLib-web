@@ -67,7 +67,7 @@ import TheInfoBox from '~/components/InfoBox/TheInfoBox'
 import HeatMapWrapper from '~/components/HeatMap/HeatMapWrapper'
 import GraphWrapper from '~/components/ConceptMap/GraphWrapper'
 export default {
-  name: 'Search',
+  name: 'PageSearch',
   components: { GraphWrapper, HeatMapWrapper, TheInfoBox },
   async asyncData({ query, $axios }) {
     const q = query.q
