@@ -20,7 +20,7 @@
             {{ doc._source.meta.title }}
           </v-card-title>
           <v-card-subtitle class="pb-md-0">
-            {{ doc._source.file.filename }}
+            {{ doc._source.file.filename }} Score: {{ doc._score }}
           </v-card-subtitle>
           <v-card-text v-if="doc.highlight">
             <ul>

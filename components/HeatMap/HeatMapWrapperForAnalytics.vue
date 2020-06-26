@@ -17,6 +17,7 @@
         :height="chartHeight"
         :color-range="colorRange"
         :dataset="heatmapData"
+        :padding="{ top: 25, right: 2, left: 300, bottom: 2 }"
       />
     </v-card-text>
   </v-card>
@@ -25,7 +26,7 @@
 <script>
 import HeatMap from './TheHeatMap'
 export default {
-  name: 'HeatMapWrapper',
+  name: 'HeatMapWrapperForAnalytics',
   components: {
     'heat-map': HeatMap
   },
@@ -95,52 +96,19 @@ export default {
   },
   computed: {
     heatmapData() {
-      // TODO: for each document and each query from $store.state.searchQueries
-      return [
-        {
-          y: 'doc1',
-          x: 'q1',
-          value: 20
-        },
-        {
-          y: 'doc2',
-          x: 'q1',
-          value: 40
-        },
-        {
-          y: 'doc3',
-          x: 'q1',
-          value: 25
-        },
-        {
-          y: 'doc4',
-          x: 'q1',
-          value: 15
-        },
-        {
-          y: 'doc1',
-          x: 'q2',
-          value: 40
-        },
-        {
-          y: 'doc2',
-          x: 'q2',
-          value: 5
-        },
-        {
-          y: 'doc3',
-          x: 'q2',
-          value: 17
-        },
-        {
-          y: 'doc4',
-          x: 'q2',
-          value: 32
+      const res = []
+      for (const transaction of this.dataset) {
+        for (const doc of transaction.response.hits.hits) {
+          console.log(doc._score)
+          res.push({
+            x: transaction.query,
+            y: doc._source.path.virtual,
+            value: doc._score
+          })
         }
-      ]
+      }
+      return res
     }
   }
 }
 </script>
-
-<style scoped></style>
