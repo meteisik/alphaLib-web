@@ -18,7 +18,7 @@
 
 <script>
 export default {
-  name: 'Analytics',
+  name: 'PageAnalyticsDocument',
   async asyncData({ query, $axios }) {
     let match = { match_all: {} }
     if (query.q)

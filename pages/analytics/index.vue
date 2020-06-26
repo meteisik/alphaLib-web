@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: 'Analytics',
+  name: 'PageAnalyticsIndex',
   data() {
     return {
       idInput: 'ID here'
