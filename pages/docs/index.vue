@@ -208,7 +208,7 @@ export default {
       return Math.ceil(this.search.hits.total.value / this.paginationSize)
     },
     heatmapHeight() {
-      return 40 + this.hits.length * 5
+      return 40 + this.hits.length * 8
     }
   },
   watch: {
