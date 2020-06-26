@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app v-cloak dark>
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
@@ -64,9 +64,9 @@
       <!--      </v-btn>-->
     </v-app-bar>
 
-    <v-content>
+    <v-content v-cloak>
       <v-container fluid>
-        <nuxt keep-alive :keep-alive-props="{ max: 10 }" />
+        <nuxt v-cloak keep-alive :keep-alive-props="{ max: 10 }" />
       </v-container>
     </v-content>
     <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
@@ -147,16 +147,17 @@ export default {
       // if (this.search === null) return []
       // return this.search.hits.hits
     }
-  },
-  watch: {
-    route() {
-      this.$router.push('/search?q=' + this.search)
-    }
-  },
-  methods: {
-    doSearch() {
-      this.$router.push('/search?q=' + this.search)
-    }
   }
 }
+// watch: {
+//   route() {
+//     this.$router.push('/search?q=' + this.search)
+//   }
+// },
+//   methods: {
+//     doSearch() {
+//       this.$router.push('/search?q=' + this.search)
+//     }
+//   }
+// }
 </script>

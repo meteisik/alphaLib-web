@@ -1,5 +1,5 @@
 <template>
-  <v-row align="start" justify="start" no-gutters>
+  <v-row v-cloak align="start" justify="start" no-gutters>
     <v-col v-for="(doc, i) in hits" :key="i + '-' + doc._id" cols="12" md="4">
       <v-card color="primary" dark>
         <div class="d-flex flex-no-wrap justify-space-between">
@@ -81,12 +81,12 @@ export default {
       if (this.search === null) return []
       return this.search.hits.hits
     }
-  },
-  watch: {
-    route() {
-      this.$router.push('/search?q=' + this.search)
-    }
   }
+  // watch: {
+  //   route() {
+  //     this.$router.push('/search?q=' + this.search)
+  //   }
+  // }
 }
 </script>
 

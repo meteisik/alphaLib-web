@@ -4,7 +4,7 @@
     <v-autocomplete
       v-model="query"
       :search-input.sync="search"
-      :items="hits"
+      :items="items"
       :loading="isLoading"
       :outlined="!solo"
       :solo="solo"
@@ -12,7 +12,6 @@
       rounded
       single-line
       autofocus
-      cache-items
       full-width
       prepend-inner-icon="mdi-magnify"
       color="primary"
@@ -24,31 +23,32 @@
       return-object
       @keyup.enter="doSearch"
     >
-      // eslint-disable-next-line vue/no-unused-vars
+      <tempate v-slot:no-data>
+        <v-list-item-title>
+          {{ 'Not Specified' }}
+        </v-list-item-title>
+      </tempate>
       <template v-slot:item="{ item }">
-        {{ JSON.stringify(item.hits.hits) }}
-        <v-list-item-content v-for="(doc, i) in hits" :key="i + '-' + doc._id">
-          <v-list-item-subtitle>
-            <v-list-item-subtitle>
-              {{ 'Title: ' + doc._source.meta.title }}
-            </v-list-item-subtitle>
-            <v-list-item-subtitle>
-              {{ 'Author: ' + doc._source.meta.url }}</v-list-item-subtitle
-            >
-            <v-list-item-subtitle>
-              <ul>
-                <li
-                  v-for="phrase in doc.highlight.content"
-                  :key="phrase"
-                  v-html="phrase"
-                ></li>
-              </ul>
-            </v-list-item-subtitle>
+        <v-icon color="grey">fas fa-list</v-icon>
+        <v-list-item-content>
+          <v-list-item-title>
+            {{ 'Title: ' + item._source.meta.title }}
+          </v-list-item-title>
+          <v-list-item-subtitle>{{
+            'Author: ' + item._source.meta.url
+          }}</v-list-item-subtitle>
+          <v-list-item-subtitle :key="item._id">
+            <ul>
+              <li
+                v-for="phrase in item.highlight.content"
+                :key="phrase"
+                v-html="phrase"
+              ></li>
+            </ul>
           </v-list-item-subtitle>
         </v-list-item-content>
       </template>
     </v-autocomplete>
-    <v-btn :to="'/search?q=' + this.search">Search</v-btn>
   </div>
 </template>
 
@@ -63,36 +63,40 @@ export default {
       search: '',
       suggestions: null,
       route: '',
-      button: true,
       items: []
     }
   },
   computed: {
     hits() {
-      if (this.suggestions === null) return ['Not Specified']
-      if (Object.keys(this.suggestions).includes('hits'))
-        if (Object.keys(this.suggestions.hits).includes('hits'))
-          // console.log(this.suggestions.hits.hits)
-          return this.suggestions.hits.hits
-      return []
-    },
-    q() {
-      return {
-        search: null
+      if (this.suggestions === null) {
+        return ['Not Specified']
       }
+      if (Object.keys(this.suggestions).includes('hits')) {
+        if (Object.keys(this.suggestions.hits).includes('hits')) {
+          return this.suggestions.hits.hits
+        }
+      }
+      return []
     }
   },
+  //   q() {
+  //     return {
+  //       search: null
+  //     }
+  //   }
+  // },
   watch: {
     search(val) {
-      console.log('from hit in auto ' + val)
+      console.log(val)
       this.querySuggestions(val)
     },
-    $route(to, from) {
-      // react to route changes...
-      console.log('to' + to)
-      console.log('from' + from)
-    },
+    // $route(to, from) {
+    //   // react to route changes...
+    //
+    // },
     route() {
+      // this works because it reloads after the function fails, not sure how to make it legal
+      // this.searchUp(this.$route.params.search)
       this.searchUp(this.$route.params.search)
     }
   },
@@ -148,7 +152,8 @@ export default {
         })
         .then((res) => {
           // let string = JSON.stringify(res.data.hits.hits.highlight)
-          console.log(res.data.hits)
+          // console.log(res.data.hits)
+          this.items = res.data.hits.hits
           return res.data
         })
         .catch((e) => {
@@ -159,7 +164,7 @@ export default {
       this.suggestions = suggestions
     },
     doSearch() {
-      console.log('fired')
+      // console.log('fired')
       this.$router.push('/search?q=' + this.search)
       this.route = '/search?q=' + this.search
     }
