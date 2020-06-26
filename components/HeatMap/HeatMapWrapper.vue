@@ -98,43 +98,43 @@ export default {
       // TODO: for each document and each query from $store.state.searchQueries
       return [
         {
-          x: 'doc1',
-          y: 'q1',
+          y: 'doc1',
+          x: 'q1',
           value: 20
         },
         {
-          x: 'doc2',
-          y: 'q1',
+          y: 'doc2',
+          x: 'q1',
           value: 40
         },
         {
-          x: 'doc3',
-          y: 'q1',
+          y: 'doc3',
+          x: 'q1',
           value: 25
         },
         {
-          x: 'doc4',
-          y: 'q1',
+          y: 'doc4',
+          x: 'q1',
           value: 15
         },
         {
-          x: 'doc1',
-          y: 'q2',
+          y: 'doc1',
+          x: 'q2',
           value: 40
         },
         {
-          x: 'doc2',
-          y: 'q2',
+          y: 'doc2',
+          x: 'q2',
           value: 5
         },
         {
-          x: 'doc3',
-          y: 'q2',
+          y: 'doc3',
+          x: 'q2',
           value: 17
         },
         {
-          x: 'doc4',
-          y: 'q2',
+          y: 'doc4',
+          x: 'q2',
           value: 32
         }
       ]
