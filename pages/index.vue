@@ -6,7 +6,7 @@
     </v-col>
     <v-col cols="12" align-self="center" class="text-center">
       <v-row align="center" justify="center">
-        <v-col cols="6" align-self="center">
+        <v-col cols="12" md="6" align-self="center">
           <v-autocomplete
             v-model="query"
             :search-input.sync="search"
@@ -37,7 +37,7 @@
     </v-col>
     <v-col v-if="history.length > 0" cols="12" align-self="center">
       <v-row align="center" justify="center">
-        <v-col cols="4">
+        <v-col cols="12" md="6">
           <v-list tile dense rounded>
             <v-subheader>Recent queries</v-subheader>
             <v-list-item-group v-model="item" color="primary">
