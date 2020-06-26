@@ -37,8 +37,8 @@
     </v-col>
     <v-col v-if="history.length > 0" cols="12" align-self="center">
       <v-row align="center" justify="center">
-        <v-col cols="5">
-          <v-list dense tile rounded>
+        <v-col cols="4">
+          <v-list tile dense rounded>
             <v-subheader>Recent queries</v-subheader>
             <v-list-item-group v-model="item" color="primary">
               <v-list-item
@@ -51,7 +51,9 @@
                   <v-icon>mdi-history</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title>{{ item.query }}</v-list-item-title>
+                  <v-list-item-title>
+                    {{ item.query }}
+                  </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-group>
@@ -147,6 +149,9 @@ export default {
     doSearch() {
       this.$store.commit('ADD_QUERY', this.search)
       this.$router.push('/docs?q=' + this.search)
+    },
+    removeQueryFromHistory(searchItem) {
+      this.$store.commit('REMOVE_QUERY', searchItem.query)
     }
   }
 }

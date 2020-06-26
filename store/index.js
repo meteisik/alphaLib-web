@@ -10,6 +10,12 @@ export const mutations = {
         words: q.split(' ')
       })
   },
+  REMOVE_QUERY(state, q) {
+    const index = state.searchQueries.map((i) => i.query).indexOf(q)
+    if (index && !(index < 0)) {
+      state.searchQueries.splice(index)
+    }
+  },
   RESET_QUERIES(state) {
     state.searchQueries = []
   }
