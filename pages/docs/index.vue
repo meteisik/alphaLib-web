@@ -217,7 +217,7 @@ export default {
   },
   layout: 'withsearchbar',
   mounted() {
-    this.$store.commit('ADD_QUERY', this.q)
+    if (this.q) this.$store.commit('ADD_QUERY', this.q)
     this.resize()
     window.addEventListener('resize', this.resize)
   },
