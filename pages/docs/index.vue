@@ -215,7 +215,7 @@ export default {
     '$route.query.page': '$fetch',
     '$route.query.size': '$fetch'
   },
-  layout: 'search',
+  layout: 'withsearchbar',
   mounted() {
     this.$store.commit('ADD_QUERY', this.q)
     this.resize()
