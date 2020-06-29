@@ -50,6 +50,7 @@
     "lint-staged": "^10.0.0",
     "prettier": "^1.19.1",
     "stylelint": "^10.1.0",
-    "vue-jest": "^4.0.0-0"
+    "vue-jest": "^4.0.0-0",
+    "vue-router": "^3.3.4"
   }
 }

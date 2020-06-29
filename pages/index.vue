@@ -1,37 +1,19 @@
 <template>
   <v-row align="center" justify="center">
-    <v-col cols="12" class="mt-10 text-center" align-self="center">
+    <v-col cols="5" class="mt-10 text-center" align-self="center">
       <logo />
       <vuetify-logo />
     </v-col>
-    <v-col cols="12" align-self="center" class="text-center">
+    <v-col
+      cols="10"
+      align-self="center"
+      class="
+   text-center"
+    >
       <v-row align="center" justify="center">
-        <v-col cols="6" align-self="center">
-          <v-autocomplete
-            v-model="query"
-            :search-input.sync="search"
-            :items="hits"
-            :loading="isLoading"
-            :outlined="!solo"
-            :solo="solo"
-            rounded
-            single-line
-            auto-select-first
-            autofocus
-            cache-items
-            full-width
-            prepend-inner-icon="mdi-magnify"
-            color="primary"
-            hide-no-data
-            hide-selected
-            item-text="_source.meta.title"
-            item-value="_source.meta.author"
-            placeholder="The meaning of life..."
-            return-object
-            @keyup.native.enter="doSearch"
-          >
-          </v-autocomplete>
-          <v-btn link @click.stop="doSearch">Search</v-btn>
+        <v-col cols="5" align-self="center">
+          <!--          <router-view :key="$route.fullPath"></router-view>-->
+          <Autocomplete class="d-flex"></Autocomplete>
         </v-col>
       </v-row>
     </v-col>
@@ -67,12 +49,14 @@
 <script>
 import Logo from '~/components/Logo.vue'
 import VuetifyLogo from '~/components/VuetifyLogo.vue'
+import Autocomplete from '~/components/Autocomplete'
 
 export default {
   name: 'PageIndex',
   components: {
     Logo,
-    VuetifyLogo
+    VuetifyLogo,
+    Autocomplete
   },
   data() {
     return {
@@ -80,72 +64,80 @@ export default {
       solo: false,
       query: '',
       search: '',
-      suggestions: null
+      suggestions: null,
+      watchQuery: true
     }
   },
   computed: {
-    hits() {
-      if (this.suggestions === null) return []
-      if (Object.keys(this.suggestions).includes('hits'))
-        if (Object.keys(this.suggestions.hits).includes('hits'))
-          return this.suggestions.hits.hits
-      return []
-    },
+    // hits() {
+    //   if (this.suggestions === null) return []
+    //   if (Object.keys(this.suggestions).includes('hits'))
+    //     if (Object.keys(this.suggestions.hits).includes('hits'))
+    //       return this.suggestions.hits.hits
+    //   return []
+    // },
     history() {
       return this.$store.state.searchQueries
     }
   },
-  watch: {
-    search(val) {
-      this.querySuggestions(val)
-    }
-  },
+  // watch: {
+  //   search(val) {
+  //     this.querySuggestions(val)
+  //   }
+  // },
+  // watch: {
+  //   route() {
+  //     // this works because it reloads after the function fails, not sure how to make it legal
+  //     this.searchUp(this.$route.params.search)
+  //     this.$router.push('/docs?q=' + this.search)
+  //   }
+  // },
   methods: {
-    async lookUp(el) {
-      const q = this.query
-      const res = await this.$axios.post('/api/literature/_search', {
-        explain: true,
-        sort: ['_score'],
-        query: {
-          multi_match: {
-            query: q,
-            type: 'bool_prefix',
-            fields: ['content', 'meta.*']
-          }
-        }
-      })
-      this.search = res.data
-    },
-    async querySuggestions(q) {
-      this.isLoading = true
-      const suggestions = await this.$axios
-        .post('/api/literature/_search', {
-          explain: true,
-          _source: ['path'],
-          query: {
-            multi_match: {
-              query: q,
-              type: 'bool_prefix',
-              fields: ['meta', 'content']
-            }
-          },
-          highlight: {
-            type: 'unified',
-            order: 'score',
-            fields: {
-              content: { number_of_fragments: 200 }
-            }
-          }
-        })
-        .then((res) => {
-          return res.data
-        })
-        .catch((e) => {
-          return {}
-        })
-      this.isLoading = false
-      this.suggestions = suggestions
-    },
+    // async lookUp(el) {
+    //   const q = this.query
+    //   const res = await this.$axios.post('/api/literature/_search', {
+    //     explain: true,
+    //     sort: ['_score'],
+    //     query: {
+    //       multi_match: {
+    //         query: q,
+    //         type: 'bool_prefix',
+    //         fields: ['content', 'meta.*']
+    //       }
+    //     }
+    //   })
+    //   this.search = res.data
+    // },
+    // async querySuggestions(q) {
+    //   this.isLoading = true
+    //   const suggestions = await this.$axios
+    //     .post('/api/literature/_search', {
+    //       explain: true,
+    //       _source: ['path'],
+    //       query: {
+    //         multi_match: {
+    //           query: q,
+    //           type: 'bool_prefix',
+    //           fields: ['meta', 'content']
+    //         }
+    //       },
+    //       highlight: {
+    //         type: 'unified',
+    //         order: 'score',
+    //         fields: {
+    //           content: { number_of_fragments: 200 }
+    //         }
+    //       }
+    //     })
+    //     .then((res) => {
+    //       return res.data
+    //     })
+    //     .catch((e) => {
+    //       return {}
+    //     })
+    //   this.isLoading = false
+    //   this.suggestions = suggestions
+    // },
     doSearch() {
       this.$store.commit('ADD_QUERY', this.search)
       this.$router.push('/docs?q=' + this.search)
