@@ -141,7 +141,7 @@ export default {
       .selectAll('circle')
       .data(this.nodes)
       .join('circle')
-      .attr('r', 10)
+      .attr('r', 5)
       .attr('fill', (d) => this.colorScale(d.group))
       .call(drag(simulation))
 
