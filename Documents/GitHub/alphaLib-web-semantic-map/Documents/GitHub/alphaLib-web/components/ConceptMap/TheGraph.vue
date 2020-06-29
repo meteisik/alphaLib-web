@@ -146,6 +146,11 @@ export default {
       .call(drag(simulation))
 
     node.append('title').text((d) => d.id)
+    node
+      .append('text')
+      .attr('dx', 12)
+      .attr('dy', '.35em')
+      .text('test')
 
     simulation.on('tick', () => {
       link
@@ -161,4 +166,9 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.node text {
+  pointer-events: none;
+  font: 10px sans-serif;
+}
+</style>
