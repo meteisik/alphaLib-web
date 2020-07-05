@@ -161,4 +161,9 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.node text {
+  pointer-events: none;
+  font: 10px sans-serif;
+}
+</style>
