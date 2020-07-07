@@ -69,13 +69,13 @@ export default {
     }
   },
   computed: {
-    // hits() {
-    //   if (this.suggestions === null) return []
-    //   if (Object.keys(this.suggestions).includes('hits'))
-    //     if (Object.keys(this.suggestions.hits).includes('hits'))
-    //       return this.suggestions.hits.hits
-    //   return []
-    // },
+    hits() {
+      if (this.suggestions === null) return []
+      if (Object.keys(this.suggestions).includes('hits'))
+        if (Object.keys(this.suggestions.hits).includes('hits'))
+          return this.suggestions.hits.hits
+      return []
+    },
     history() {
       return this.$store.state.searchQueries
     }

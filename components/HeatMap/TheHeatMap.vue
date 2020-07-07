@@ -15,11 +15,14 @@
     <g
       :class="'x-axis heatmap-' + svgId + '-x-axis'"
       :transform="'translate(0,' + chartTop + ')'"
+      @click.up="xClicked()"
     ></g>
     <g
       :class="'y-axis heatmap-' + svgId + '-y-axis'"
       :transform="'translate(' + chartLeft + ', 0)'"
+      @click.up="yClicked()"
     ></g>
+    <div class="status">Click on a circle</div>
   </svg>
 </template>
 
@@ -49,7 +52,7 @@ export default {
     colorRange: {
       type: Array,
       default() {
-        return ['#e7d008', '#e70546']
+        return ['#e7d008', '#e7d008']
       }
     },
     padding: {
@@ -62,12 +65,24 @@ export default {
           bottom: 2
         }
       }
+    },
+    // temporary frequency input for heatmap
+    frequency: {
+      type: Object,
+      default() {
+        return {
+          qeury1: 5,
+          query2: 10,
+          query3: 11
+        }
+      }
     }
   },
   data() {
     return {
       svg: null,
       circlesGroup: null,
+      xClickedVal: '',
       axes: {
         x: {
           padding: 0.01,
@@ -142,6 +157,16 @@ export default {
     this.setupSVG()
   },
   methods: {
+    xClicked(val) {
+      console.log('click x')
+
+      // This is another position to do clicks on the axes but you have to bring in the dom element in question
+    },
+    yClicked() {
+      console.log('click y')
+
+      // This is another position to do clicks on the axes but you have to bring in the dom element in row query
+    },
     setupSVG() {
       // Select the SVG element
       this.svg = d3.select('.heatmap')
@@ -154,13 +179,41 @@ export default {
       this.axes.x.element
         .call(this.xAxisFunction)
         .selectAll('text')
-        .attr('class', 'body-1')
+        .attr('class', 'body-x')
+        .each(function(d, i) {
+          d3.select(this).attr('id', i)
+        })
+        .on('click', function(d, i) {
+          d3.select(this)
+            .transition()
+            .duration(500)
+            .style('color', 'lightBlue')
+
+          // enter code here to add link/event to infobox
+
+          // const clickx = d3.event
+          // event.preventDefault()
+        })
 
       // Draw Y axis
       this.axes.y.element
         .call(this.yAxisFunction)
         .selectAll('text')
-        .attr('class', 'body-1')
+        .attr('class', 'body-y')
+        .each(function(d, i) {
+          d3.select(this).attr('ref', i)
+        })
+        .on('click', function(d, i) {
+          d3.select(this)
+            .transition()
+            .duration(500)
+            .style('color', 'lightBlue')
+
+          // enter code here to add link/event to infobox
+
+          // const clicky = d3.event
+          // event.preventDefault()
+        })
     }
   }
 }

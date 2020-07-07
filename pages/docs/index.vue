@@ -159,7 +159,7 @@ export default {
         svgId: 'heatmap-chart-svg-element',
         label: 'Tiles',
         width: 500,
-        height: 100
+        height: 700
       },
       conceptmap: {
         id: 'conceptmap',
@@ -208,7 +208,7 @@ export default {
       return Math.ceil(this.search.hits.total.value / this.paginationSize)
     },
     heatmapHeight() {
-      return 40 + this.hits.length * 8
+      return 500 + this.hits.length * 8
     }
   },
   watch: {
@@ -225,7 +225,7 @@ export default {
     resize() {
       const heatDiv = document.getElementById(this.charts.heatmap.divId)
       if (heatDiv) {
-        this.charts.heatmap.width = heatDiv.clientWidth - 30
+        this.charts.heatmap.width = heatDiv.clientWidth
         this.charts.heatmap.height = this.heatmapHeight
         document
           .getElementById(this.charts.heatmap.svgId)
@@ -237,7 +237,7 @@ export default {
 
       const conceptDiv = document.getElementById(this.charts.conceptmap.divId)
       if (conceptDiv) {
-        this.charts.conceptmap.width = conceptDiv.clientWidth - 30
+        this.charts.conceptmap.width = conceptDiv.clientWidth
         document
           .getElementById(this.charts.conceptmap.svgId)
           .setAttribute('width', this.charts.conceptmap.width)
