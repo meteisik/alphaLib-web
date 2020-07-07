@@ -90,17 +90,28 @@
 import TheInfoBox from '~/components/InfoBox/TheInfoBox'
 import HeatMapWrapper from '~/components/HeatMap/HeatMapWrapper'
 import GraphWrapper from '~/components/ConceptMap/GraphWrapper'
+// TEST CODE BEGINS
 const docContent = {
   content:
     '\nIntroduction to Cybernetics\nand the Design of Systems\nCollected Models \nJanuary 2010\n\nHugh Dubberly \nPaul Pangaro\n\nWorking Draft v4.1\nNot for re-distribution\n\n\n\na. goal of models\nThis book of collected models is intended to serve as an archive and (if not now, then soon) a practicum.\n\nb. description\nThe collection is an archive in that it comprises the basic models from the discipline of cybernetics, a science \nof goals, interaction, and feedback. The collection had been developed for a university course where these \nmodels were used to frame ‘design’. Coursework required students to name and simulate the cybernetic  \nelements of the systems they wished to design, whether software, design process, or organization. '
 }
-const content = docContent.content
-const strippedContent = content.replace(/\n/g, '')
-const contentArray = strippedContent.split('.')
+const content = docContent.content.toLowerCase()
+const phraseArr = content.replace(/\n/g, ' ').split('.')
+const wordDict = {}
 
-console.log(content)
-console.log(strippedContent)
-console.log(contentArray)
+for (const y in phraseArr) {
+  const phrase = phraseArr[y].split(' ')
+  for (const x in phrase) {
+    if (phrase[x] in wordDict) {
+      wordDict[phrase[x]] = wordDict[phrase[x]] + 1
+    } else {
+      wordDict[phrase[x]] = 1
+    }
+  }
+}
+
+console.log(wordDict)
+// TEST CODE ENDS
 export default {
   name: 'PageDocsIndex',
   components: { GraphWrapper, HeatMapWrapper, TheInfoBox },
