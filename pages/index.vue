@@ -55,8 +55,7 @@ export default {
   components: {
     SearchBar,
     Logo,
-    VuetifyLogo,
-    Autocomplete
+    VuetifyLogo
   },
   data() {
     return {

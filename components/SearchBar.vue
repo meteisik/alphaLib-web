@@ -80,32 +80,6 @@ export default {
       default: true
     }
   },
-  data() {
-    return {
-      isLoading: false,
-      suggestions: null,
-      query: '',
-      route: '',
-      selectedSuggestion: null
-    }
-  },
-  computed: {
-    hits() {
-      if (!this.suggestions) return []
-      if (this.suggestions.hits)
-        if (this.suggestions.hits.hits) return this.suggestions.hits.hits
-      return []
-    }
-  },
-  watch: {
-    query(val) {
-      this.$emit('typed', val)
-      this.$fetch()
-    },
-    selectedSuggestion(val) {
-      this.$emit('selected', val)
-    }
-  },
   async fetch() {
     this.isLoading = true
     const q = this.query
@@ -140,6 +114,32 @@ export default {
       })
     this.isLoading = false
     this.suggestions = suggestions
+  },
+  data() {
+    return {
+      isLoading: false,
+      suggestions: null,
+      query: '',
+      route: '',
+      selectedSuggestion: null
+    }
+  },
+  computed: {
+    hits() {
+      if (!this.suggestions) return []
+      if (this.suggestions.hits)
+        if (this.suggestions.hits.hits) return this.suggestions.hits.hits
+      return []
+    }
+  },
+  watch: {
+    query(val) {
+      this.$emit('typed', val)
+      this.$fetch()
+    },
+    selectedSuggestion(val) {
+      this.$emit('selected', val)
+    }
   },
   methods: {
     enterPressed() {
