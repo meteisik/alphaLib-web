@@ -5,6 +5,7 @@
         <div v-if="$fetchState.pending">
           Fetching with page query {{ $route.query }}...
         </div>
+        <div>Results for "{{ $route.query.q }}"</div>
         <v-col cols="6" align-self="center" class="mx-auto">
           <v-pagination
             v-model="page"
