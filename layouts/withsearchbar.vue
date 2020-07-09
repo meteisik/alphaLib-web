@@ -8,19 +8,15 @@
       </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-text-field
-        v-model="search"
-        :loading="isLoading"
-        :outlined="!solo"
-        :solo="solo"
-        rounded
-        single-line
-        dense
-        hide-details
-        cache-items
-        prepend-inner-icon="mdi-magnify"
-        placeholder="The meaning of life..."
-      ></v-text-field>
+      <SearchBar
+        :hide-details="true"
+        :dense="true"
+        :initial-query="routeQuery"
+        :autofocus="false"
+        @selected="suggestionSelected"
+        @enter="doSearch"
+        @typed="typed"
+      />
       <v-spacer />
       <v-btn icon @click.stop="dark = !dark">
         <v-icon>mdi-{{ `brightness-${dark ? '5' : '4'}` }}</v-icon>
@@ -38,9 +34,10 @@
 <script>
 import TheFooter from '~/components/TheFooter'
 import TheNavigationDrawer from '~/components/TheNavigationDrawer'
+import SearchBar from '~/components/SearchBar'
 export default {
   name: 'WithSearchBarLayout',
-  components: { TheNavigationDrawer, TheFooter },
+  components: { SearchBar, TheNavigationDrawer, TheFooter },
   data() {
     return {
       clipped: true,
@@ -48,6 +45,7 @@ export default {
       fixed: false,
       title: 'AlphaLib',
       isLoading: false,
+      query: '',
       solo: true
     }
   },
@@ -60,18 +58,28 @@ export default {
         this.$vuetify.theme.dark = val
       }
     },
-    search() {
+    routeQuery() {
       return this.$route.query.q
-    },
-    hits() {
-      return []
-      // if (this.search === null) return []
-      // return this.search.hits.hits
     }
   },
   methods: {
-    doSearch() {
-      this.$router.push('/search?q=' + this.search)
+    doSearch(query) {
+      this.typed(query)
+      console.log('doing search on: ', this.query)
+      this.$store.commit('ADD_QUERY', { q: this.query })
+      this.$router.push('/docs?q=' + this.query)
+    },
+    typed(phrase) {
+      console.log('typed: ', phrase)
+      this.query = phrase
+    },
+    suggestionSelected(suggestion) {
+      this.suggestionSelected = suggestion
+      this.$store.commit('ADD_QUERY', {
+        q: suggestion._source.file.filename,
+        to: '/docs/' + suggestion._id
+      })
+      this.$router.push('/docs/' + suggestion._id)
     }
   }
 }

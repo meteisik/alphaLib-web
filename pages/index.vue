@@ -26,7 +26,7 @@
                 v-for="(item, i) in history"
                 :key="i"
                 link
-                :to="'/docs?q=' + item.query"
+                :to="item.to"
               >
                 <v-list-item-icon>
                   <v-icon>mdi-history</v-icon>
@@ -79,7 +79,7 @@ export default {
     doSearch(query) {
       console.log('doing search on: ', this.query)
       this.typed(query)
-      this.$store.commit('ADD_QUERY', this.query)
+      this.$store.commit('ADD_QUERY', { q: this.query })
       this.$router.push('/docs?q=' + this.query)
     },
     typed(phrase) {
@@ -88,7 +88,10 @@ export default {
     },
     suggestionSelected(suggestion) {
       this.suggestionSelected = suggestion
-      this.$store.commit('ADD_QUERY', suggestion._source.file.filename)
+      this.$store.commit('ADD_QUERY', {
+        q: suggestion._source.file.filename,
+        to: '/docs/' + suggestion._id
+      })
       this.$router.push('/docs/' + suggestion._id)
     },
     removeQueryFromHistory(searchItem) {

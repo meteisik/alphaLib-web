@@ -5,6 +5,27 @@
         <div v-if="$fetchState.pending">
           Fetching with page query {{ $route.query }}...
         </div>
+        <v-col cols="6" align-self="center" class="mx-auto">
+          <v-pagination
+            v-model="page"
+            :circle="paginationCircle"
+            :disabled="paginationDisabled"
+            :length="totalPages"
+            :page="page"
+            :total-visible="10"
+          ></v-pagination>
+        </v-col>
+        <v-col cols="2">
+          <v-select
+            v-model="paginationSize"
+            :items="[5, 10, 20, 40]"
+            label="Num. of Items"
+            hint="Items per page"
+            persistent-hint
+            dense
+            flat
+          ></v-select>
+        </v-col>
         <v-card
           v-for="(doc, i) in hits"
           :key="i + '-' + doc._id"
@@ -213,11 +234,12 @@ export default {
   },
   watch: {
     '$route.query.page': '$fetch',
-    '$route.query.size': '$fetch'
+    '$route.query.size': '$fetch',
+    '$route.query.q': '$fetch'
   },
   layout: 'withsearchbar',
   mounted() {
-    if (this.q) this.$store.commit('ADD_QUERY', this.q)
+    if (this.q) this.$store.commit('ADD_QUERY', { q: this.q })
     this.resize()
     window.addEventListener('resize', this.resize)
   },

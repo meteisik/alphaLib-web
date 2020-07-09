@@ -6,10 +6,12 @@
     :loading="isLoading"
     :outlined="!solo"
     :solo="solo"
+    :hide-details="hideDetails"
+    :dense="dense"
+    :autofocus="autofocus"
     clearable
     rounded
     single-line
-    autofocus
     full-width
     prepend-inner-icon="mdi-magnify"
     color="primary"
@@ -60,6 +62,22 @@ export default {
     solo: {
       type: Boolean,
       default: false
+    },
+    hideDetails: {
+      type: Boolean,
+      default: false
+    },
+    dense: {
+      type: Boolean,
+      default: false
+    },
+    initialQuery: {
+      type: String,
+      default: ''
+    },
+    autofocus: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
