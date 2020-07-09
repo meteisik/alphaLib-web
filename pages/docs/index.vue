@@ -5,28 +5,6 @@
         <div v-if="$fetchState.pending">
           Fetching with page query {{ $route.query }}...
         </div>
-        <div>Results for "{{ $route.query.q }}"</div>
-        <v-col cols="6" align-self="center" class="mx-auto">
-          <v-pagination
-            v-model="page"
-            :circle="paginationCircle"
-            :disabled="paginationDisabled"
-            :length="totalPages"
-            :page="page"
-            :total-visible="10"
-          ></v-pagination>
-        </v-col>
-        <v-col cols="2">
-          <v-select
-            v-model="paginationSize"
-            :items="[5, 10, 20, 40]"
-            label="Num. of Items"
-            hint="Items per page"
-            persistent-hint
-            dense
-            flat
-          ></v-select>
-        </v-col>
         <v-card
           v-for="(doc, i) in hits"
           :key="i + '-' + doc._id"
@@ -36,7 +14,7 @@
           hover
           rounded
           link
-          :to="'docs/' + doc._id"
+          @click="renderInfoBox(doc)"
         >
           <v-card-title class="primary--text">
             {{ doc._source.meta.title }}
@@ -79,7 +57,14 @@
       </v-row>
     </v-col>
     <v-col cols="5" align-self="start">
-      <TheInfoBox class="mb-2" max-width="90%" :hover="false"></TheInfoBox>
+      <TheInfoBox
+        v-show="showInfoBox"
+        class="mb-2"
+        max-width="90%"
+        :hover="false"
+        :meta="infoData"
+      ></TheInfoBox>
+
       <HeatMapWrapper
         :id="charts.heatmap.id"
         class="mb-2"
@@ -167,6 +152,8 @@ export default {
     this.search = res.data
   },
   data: () => ({
+    showInfoBox: false,
+    infoData: {},
     // Search configuration
     paginationCircle: false,
     paginationDisabled: false,
@@ -235,16 +222,48 @@ export default {
   },
   watch: {
     '$route.query.page': '$fetch',
-    '$route.query.size': '$fetch',
-    '$route.query.q': '$fetch'
+    '$route.query.size': '$fetch'
   },
   layout: 'withsearchbar',
   mounted() {
-    if (this.q) this.$store.commit('ADD_QUERY', { q: this.q })
+    if (this.q) this.$store.commit('ADD_QUERY', this.q)
     this.resize()
     window.addEventListener('resize', this.resize)
   },
   methods: {
+    makeDate(dateString) {
+      if (!dateString) return
+      return new Date(dateString).toDateString()
+    },
+    async getDocAbstract(docId) {
+      const res = await this.$axios.get('/api/literature/_doc/' + docId)
+      return res.data.found
+        ? `${res.data._source.content.substring(0, 500)}...`
+        : ''
+    },
+    async renderInfoBox(doc) {
+      if (!this.showInfoBox) this.showInfoBox = true
+      this.infoData = { ...this.infoData, isLoading: true }
+      const {
+        title = '',
+        author = '',
+        created = null,
+        abstract = '',
+        image = '',
+        raw
+      } = doc._source.meta
+      this.infoData = {
+        doc_id: doc._id,
+        image,
+        title,
+        author,
+        created_date: this.makeDate(created),
+        abstract:
+          abstract.length < 1 ? await this.getDocAbstract(doc._id) : abstract,
+        number_of_pages: parseInt(raw['xmpTPg:NPages'], 10),
+        isLoading: false
+      }
+    },
     resize() {
       const heatDiv = document.getElementById(this.charts.heatmap.divId)
       if (heatDiv) {
@@ -274,3 +293,4 @@ export default {
 </script>
 
 <style scoped></style>
+
