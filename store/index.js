@@ -3,11 +3,12 @@ export const state = () => ({
 })
 
 export const mutations = {
-  ADD_QUERY(state, q) {
+  ADD_QUERY(state, { q, to }) {
     if (!state.searchQueries.map((i) => i.query).includes(q))
       state.searchQueries.push({
         query: q,
-        words: q.split(' ')
+        words: q.split(' '),
+        to: to || '/docs?q=' + q
       })
   },
   REMOVE_QUERY(state, q) {

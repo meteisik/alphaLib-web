@@ -59,6 +59,11 @@ export default {
           icon: 'mdi-chart-bubble',
           title: 'Analytics',
           to: '/analytics'
+        },
+        {
+          icon: 'mdi-chart-bubble',
+          title: 'Tiles',
+          to: '/analytics/tiles'
         }
       ]
     }

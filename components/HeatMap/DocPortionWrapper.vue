@@ -17,7 +17,7 @@
         :height="chartHeight"
         :color-range="colorRange"
         :dataset="heatmapData"
-        :padding="{ top: 100, right: 2, left: 300, bottom: 2 }"
+        :padding="{ top: 100, right: 2, left: 50, bottom: 2 }"
         @rectClick="rectClick"
       />
     </v-card-text>
@@ -27,7 +27,7 @@
 <script>
 import HeatMap from './TheHeatMap'
 export default {
-  name: 'HeatMapWrapperForAnalytics',
+  name: 'DocPortionWrapper',
   components: {
     'heat-map': HeatMap
   },
@@ -99,15 +99,21 @@ export default {
     heatmapData() {
       const res = []
       for (const transaction of this.dataset) {
-        for (const doc of transaction.response.hits.hits) {
+        const length = transaction.response.highlight.content[0].length
+        const sectionSize = length / 10
+        const segments =
+          transaction.response.highlight.content[0].match(
+            new RegExp('[\\s\\S]{1,' + sectionSize + '}', 'g')
+          ) || []
+        for (const i in segments) {
           res.push({
             x: transaction.query,
-            y: doc._source.path.virtual,
-            value: doc.highlight.content.length
+            y: i,
+            value: (segments[i].match(/<mark>/g) || []).length
           })
         }
       }
-      return res
+      return res.reverse()
     }
   },
   methods: {
