@@ -19,7 +19,7 @@
       />
       <v-spacer />
       <v-btn icon @click.stop="dark = !dark">
-        <v-icon>mdi-{{ `brightness-${dark ? '5' : '4'}` }}</v-icon>
+        <v-icon>mdi-{{ `brightness-${dark ? '7' : '4'}` }}</v-icon>
       </v-btn>
     </v-app-bar>
     <v-content>
@@ -65,12 +65,10 @@ export default {
   methods: {
     doSearch(query) {
       this.typed(query)
-      console.log('doing search on: ', this.query)
       this.$store.commit('ADD_QUERY', { q: this.query })
       this.$router.push('/docs?q=' + this.query)
     },
     typed(phrase) {
-      console.log('typed: ', phrase)
       this.query = phrase
     },
     suggestionSelected(suggestion) {

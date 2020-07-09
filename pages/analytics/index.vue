@@ -69,7 +69,6 @@ export default {
         response: tmp
       })
     }
-    console.log(res)
     this.responses = res
   },
   data() {

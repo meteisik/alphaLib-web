@@ -77,13 +77,11 @@ export default {
   },
   methods: {
     doSearch(query) {
-      console.log('doing search on: ', this.query)
       this.typed(query)
       this.$store.commit('ADD_QUERY', { q: this.query })
       this.$router.push('/docs?q=' + this.query)
     },
     typed(phrase) {
-      console.log('typed: ', phrase)
       this.query = phrase
     },
     suggestionSelected(suggestion) {
