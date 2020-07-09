@@ -10,7 +10,10 @@
         :height="yScale.bandwidth()"
         :style="'fill: ' + colorScale(item.value) + ';'"
         class="rect"
-      ></rect>
+        @click="rectClick(item)"
+      >
+        <title>{{ item.value }}</title>
+      </rect>
     </g>
     <g
       :class="'x-axis heatmap-' + svgId + '-x-axis'"
@@ -155,13 +158,24 @@ export default {
         .call(this.xAxisFunction)
         .selectAll('text')
         .attr('class', 'body-1')
+        .attr('transform', 'rotate(-90)')
+        .attr('dy', '0.8em')
+        .attr('dx', '0.5em')
+        .attr('onclick', this.columnClick)
+        .style('text-anchor', 'start')
 
       // Draw Y axis
       this.axes.y.element
         .call(this.yAxisFunction)
         .selectAll('text')
         .attr('class', 'body-1')
-    }
+        .attr('onclick', this.rowClick)
+    },
+    rectClick(item) {
+      this.$emit('rectClick', item)
+    },
+    columnClick(item) {},
+    rowClick(item) {}
   }
 }
 </script>

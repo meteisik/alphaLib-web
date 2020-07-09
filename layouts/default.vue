@@ -9,7 +9,7 @@
       <v-toolbar-title v-text="title" />
       <v-spacer />
       <v-btn icon @click.stop="dark = !dark">
-        <v-icon>mdi-{{ `brightness-${dark ? '5' : '4'}` }}</v-icon>
+        <v-icon>mdi-{{ `brightness-${dark ? '7' : '4'}` }}</v-icon>
       </v-btn>
     </v-app-bar>
     <v-content>

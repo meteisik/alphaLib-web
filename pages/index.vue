@@ -6,38 +6,19 @@
     </v-col>
     <v-col cols="12" align-self="center" class="text-center">
       <v-row align="center" justify="center">
-        <v-col cols="6" align-self="center">
-          <v-autocomplete
-            v-model="query"
-            :search-input.sync="search"
-            :items="hits"
-            :loading="isLoading"
-            :outlined="!solo"
-            :solo="solo"
-            rounded
-            single-line
-            auto-select-first
-            autofocus
-            cache-items
-            full-width
-            prepend-inner-icon="mdi-magnify"
-            color="primary"
-            hide-no-data
-            hide-selected
-            item-text="_source.meta.title"
-            item-value="_source.meta.author"
-            placeholder="The meaning of life..."
-            return-object
-            @keyup.native.enter="doSearch"
-          >
-          </v-autocomplete>
+        <v-col cols="12" md="6" align-self="center">
+          <SearchBar
+            @selected="suggestionSelected"
+            @enter="doSearch"
+            @typed="typed"
+          />
           <v-btn link @click.stop="doSearch">Search</v-btn>
         </v-col>
       </v-row>
     </v-col>
     <v-col v-if="history.length > 0" cols="12" align-self="center">
       <v-row align="center" justify="center">
-        <v-col cols="4">
+        <v-col cols="12" md="6">
           <v-list tile dense rounded>
             <v-subheader>Recent queries</v-subheader>
             <v-list-item-group v-model="item" color="primary">
@@ -45,7 +26,7 @@
                 v-for="(item, i) in history"
                 :key="i"
                 link
-                :to="'/docs?q=' + item.query"
+                :to="item.to"
               >
                 <v-list-item-icon>
                   <v-icon>mdi-history</v-icon>
@@ -67,88 +48,50 @@
 <script>
 import Logo from '~/components/Logo.vue'
 import VuetifyLogo from '~/components/VuetifyLogo.vue'
+import SearchBar from '~/components/SearchBar'
 
 export default {
   name: 'PageIndex',
   components: {
+    SearchBar,
     Logo,
-    VuetifyLogo
+    VuetifyLogo,
+    Autocomplete
   },
   data() {
     return {
       isLoading: false,
       solo: false,
       query: '',
-      search: '',
-      suggestions: null
+      selectedSuggestion: null
     }
   },
   computed: {
-    hits() {
-      if (this.suggestions === null) return []
-      if (Object.keys(this.suggestions).includes('hits'))
-        if (Object.keys(this.suggestions.hits).includes('hits'))
-          return this.suggestions.hits.hits
-      return []
-    },
     history() {
       return this.$store.state.searchQueries
     }
   },
   watch: {
-    search(val) {
-      this.querySuggestions(val)
+    query(val) {
+      // this.querySuggestions(val)
     }
   },
   methods: {
-    async lookUp(el) {
-      const q = this.query
-      const res = await this.$axios.post('/api/literature/_search', {
-        explain: true,
-        sort: ['_score'],
-        query: {
-          multi_match: {
-            query: q,
-            type: 'bool_prefix',
-            fields: ['content', 'meta.*']
-          }
-        }
+    doSearch(query) {
+      this.typed(query)
+      this.$store.commit('ADD_QUERY', { q: this.query })
+      this.$router.push('/docs?q=' + this.query)
+    },
+    typed(phrase) {
+      this.query = phrase
+    },
+    suggestionSelected(suggestion) {
+      this.suggestionSelected = suggestion
+      this.$store.commit('ADD_QUERY', {
+        q: suggestion._source.file.filename,
+        to: '/docs/' + suggestion._id
       })
-      this.search = res.data
-    },
-    async querySuggestions(q) {
-      this.isLoading = true
-      const suggestions = await this.$axios
-        .post('/api/literature/_search', {
-          explain: true,
-          _source: ['path'],
-          query: {
-            multi_match: {
-              query: q,
-              type: 'bool_prefix',
-              fields: ['meta', 'content']
-            }
-          },
-          highlight: {
-            type: 'unified',
-            order: 'score',
-            fields: {
-              content: { number_of_fragments: 200 }
-            }
-          }
-        })
-        .then((res) => {
-          return res.data
-        })
-        .catch((e) => {
-          return {}
-        })
-      this.isLoading = false
-      this.suggestions = suggestions
-    },
-    doSearch() {
-      this.$store.commit('ADD_QUERY', this.search)
-      this.$router.push('/docs?q=' + this.search)
+      this.$router.push('/docs/' + suggestion._id)
     },
     removeQueryFromHistory(searchItem) {
       this.$store.commit('REMOVE_QUERY', searchItem.query)
