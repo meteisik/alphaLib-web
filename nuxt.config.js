@@ -38,7 +38,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/bus'],
+  plugins: ['~/plugins/bus.js'],
   /*
    ** Nuxt.js dev-modules
    */

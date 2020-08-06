@@ -28,8 +28,13 @@
 
 <script>
 import * as d3 from 'd3'
+import { eventBus } from '@/plugins/bus.js'
+
 export default {
   name: 'TheHeatMap',
+  plugins: {
+    eventBus
+  },
   props: {
     svgId: {
       type: String,
@@ -60,9 +65,9 @@ export default {
       default() {
         return {
           top: 25,
-          right: 2,
+          right: 10,
           left: 70,
-          bottom: 2
+          bottom: 10
         }
       }
     }
@@ -73,11 +78,11 @@ export default {
       circlesGroup: null,
       axes: {
         x: {
-          padding: 0.01,
+          padding: 0.1,
           element: null
         },
         y: {
-          padding: 0.01,
+          padding: 0.1,
           element: null
         }
       }
@@ -143,6 +148,7 @@ export default {
   mounted() {
     // Setup the SVG and Groups
     this.setupSVG()
+    window.addEventListener('resize', this.resize)
   },
   methods: {
     setupSVG() {
@@ -161,7 +167,7 @@ export default {
         .attr('transform', 'rotate(-90)')
         .attr('dy', '0.8em')
         .attr('dx', '0.5em')
-        .attr('onclick', this.columnClick)
+        .on('click', this.columnClick)
         .style('text-anchor', 'start')
 
       // Draw Y axis
@@ -169,13 +175,21 @@ export default {
         .call(this.yAxisFunction)
         .selectAll('text')
         .attr('class', 'body-1')
-        .attr('onclick', this.rowClick)
+        .on('click', this.rowClick)
     },
     rectClick(item) {
-      this.$emit('rectClick', item)
+      console.log('rect click sent : ' + JSON.stringify(item))
+      eventBus.$emit('rectClickFromHeatMap', item)
+      // this.$emit('rectClickFromHeatMap', 'string')
     },
-    columnClick(item) {},
-    rowClick(item) {}
+    columnClick(item) {
+      eventBus.$emit('rectClickFromHeatMap', item)
+      console.log('column click in child with ' + item)
+    },
+    rowClick(item) {
+      eventBus.$emit('rectClickFromHeatMap', item)
+      console.log('row click in child with ' + item)
+    }
   }
 }
 </script>

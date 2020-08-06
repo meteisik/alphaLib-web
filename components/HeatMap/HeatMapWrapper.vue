@@ -1,7 +1,7 @@
 <template>
   <v-card
     class="mx-auto"
-    :outlined="outlined"
+    :outlined="null"
     :flat="flat"
     :hover="hover"
     :rounded="rounded"
@@ -81,8 +81,44 @@ export default {
       }
     }
   },
-  asyncData() {
-    return {}
+  async fetch() {
+    const res = []
+    for (const q of this.queries) {
+      const tmp = await this.$axios
+        .get('/api/literature/_search', {
+          explain: true,
+          sort: ['_score'],
+          _source: ['meta', 'path'],
+          size: 1,
+          query: {
+            match: {
+              content: {
+                query: q.query
+              }
+            }
+          },
+          highlight: {
+            type: 'unified',
+            order: 'score',
+            pre_tags: ['<mark>'],
+            post_tags: ['</mark>'],
+            fields: {
+              content: { number_of_fragments: 1000 }
+            }
+          }
+        })
+        .then((res) => {
+          return res.data
+        })
+        .catch((e) => {
+          return null
+        })
+      res.push({
+        query: q.query,
+        response: tmp
+      })
+    }
+    this.responses = res
   },
   data() {
     return {
@@ -90,54 +126,61 @@ export default {
       meta: {
         show: false,
         info: 'Hello this is only a help box!'
-      }
+      },
+      charts: {
+        heatmap: {
+          id: 'heatmap',
+          divId: 'heatmap-div',
+          svgId: 'heatmap-chart-svg-element',
+          label: 'Tiles',
+          width: 100,
+          height: 100
+        }
+      },
+      responses: []
     }
   },
   computed: {
     heatmapData() {
-      // TODO: for each document and each query from $store.state.searchQueries
-      return [
-        {
-          y: 'doc1',
-          x: 'q1',
-          value: 20
-        },
-        {
-          y: 'doc2',
-          x: 'q1',
-          value: 40
-        },
-        {
-          y: 'doc3',
-          x: 'q1',
-          value: 25
-        },
-        {
-          y: 'doc4',
-          x: 'q1',
-          value: 15
-        },
-        {
-          y: 'doc1',
-          x: 'q2',
-          value: 40
-        },
-        {
-          y: 'doc2',
-          x: 'q2',
-          value: 5
-        },
-        {
-          y: 'doc3',
-          x: 'q2',
-          value: 17
-        },
-        {
-          y: 'doc4',
-          x: 'q2',
-          value: 32
+      const res = []
+      for (const transaction of this.responses) {
+        for (const doc of transaction.response.hits.hits) {
+          console.log('this is inside ' + transaction.response.hits.hits)
+          console.log(doc._score)
+          console.log(transaction.query)
+          res.push({
+            x: transaction.query,
+            y: doc._source.path.virtual,
+            value: doc._score
+          })
         }
-      ]
+      }
+      return res
+    },
+    queries() {
+      return this.$store.state.searchQueries
+    },
+    heatmapHeight() {
+      return 100
+      // },
+      // mounted() {
+      //   this.resize()
+      //   window.addEventListener('resize', this.resize)
+    }
+  },
+  methods: {
+    resize() {
+      const heatDiv = document.getElementById(this.charts.heatmap.divId)
+      if (heatDiv) {
+        this.charts.heatmap.width = heatDiv.clientWidth - 30
+        this.charts.heatmap.height = this.heatmapHeight
+        document
+          .getElementById(this.charts.heatmap.svgId)
+          .setAttribute('width', this.charts.heatmap.width)
+        document
+          .getElementById(this.charts.heatmap.svgId)
+          .setAttribute('height', this.charts.heatmap.height)
+      }
     }
   }
 }

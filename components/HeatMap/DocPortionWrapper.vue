@@ -1,11 +1,10 @@
 <template>
   <v-card
     class="mx-auto"
-    :outlined="outlined"
+    :outlined="null"
     :flat="flat"
     :hover="hover"
     :rounded="rounded"
-    :max-width="maxWidth"
   >
     <v-card-title>
       {{ label }}
@@ -17,9 +16,9 @@
         :height="chartHeight"
         :color-range="colorRange"
         :dataset="heatmapData"
-        :padding="{ top: 100, right: 2, left: 50, bottom: 2 }"
-        @rectClick="rectClick"
-      />
+        :padding="{ top: 10, right: 10, left: 30, bottom: 10 }"
+      >
+      </heat-map>
     </v-card-text>
   </v-card>
 </template>
@@ -106,6 +105,7 @@ export default {
             new RegExp('[\\s\\S]{1,' + sectionSize + '}', 'g')
           ) || []
         for (const i in segments) {
+          console.log('this is i in segments' + JSON.stringify(this.i))
           res.push({
             x: transaction.query,
             y: i,
@@ -114,11 +114,6 @@ export default {
         }
       }
       return res.reverse()
-    }
-  },
-  methods: {
-    rectClick(item) {
-      this.$emit('rectClick', item)
     }
   }
 }

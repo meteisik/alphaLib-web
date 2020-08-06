@@ -35,8 +35,13 @@
 
 <script>
 import * as d3 from 'd3'
+import { eventBus } from '@/plugins/bus.js'
+
 export default {
   name: 'TheGraph',
+  plugins: {
+    eventBus
+  },
   props: {
     svgId: {
       type: String,
@@ -79,85 +84,100 @@ export default {
       svg: null,
       circles: null,
       lines: null,
-      colorScale: d3.scaleOrdinal(d3.schemeCategory10)
+      colorScale: d3.scaleOrdinal(d3.schemeCategory10),
+      HeatMapData: {
+        query: '',
+        docName: '',
+        value: 0
+      }
     }
   },
   computed: {},
-  mounted() {
-    // Store the locators
-    this.svg = d3.select('#' + this.svgId)
-    this.circles = d3.select('#circles-group')
-    this.lines = d3.select('#lines-group')
-
-    const drag = (simulation) => {
-      function dragstarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart()
-        d.fx = d.x
-        d.fy = d.y
-      }
-
-      function dragged(d) {
-        d.fx = d3.event.x
-        d.fy = d3.event.y
-      }
-
-      function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0)
-        d.fx = null
-        d.fy = null
-      }
-
-      return d3
-        .drag()
-        .on('start', dragstarted)
-        .on('drag', dragged)
-        .on('end', dragended)
+  watch: {
+    links() {
+      this.$forceUpdate()
+      this.loadGraph()
     }
-
-    const simulation = d3
-      .forceSimulation(this.nodes)
-      .force(
-        'link',
-        d3.forceLink(this.links).id((d) => d.id)
-      )
-      .force('charge', d3.forceManyBody())
-      .force('x', d3.forceX())
-      .force('y', d3.forceY())
-
-    // todo: add labels
-    const link = this.svg
-      .append('g')
-      .attr('stroke', '#999')
-      .attr('stroke-opacity', 0.6)
-      .selectAll('line')
-      .data(this.links)
-      .join('line')
-      .attr('stroke-width', (d) => Math.sqrt(d.value))
-
-    const node = this.svg
-      .append('g')
-      .attr('stroke', 'context-stroke')
-      .attr('stroke-width', 1.5)
-      .selectAll('circle')
-      .data(this.nodes)
-      .join('circle')
-      .attr('r', 5)
-      .attr('fill', (d) => this.colorScale(d.group))
-      .call(drag(simulation))
-
-    node.append('title').text((d) => d.id)
-
-    simulation.on('tick', () => {
-      link
-        .attr('x1', (d) => d.source.x)
-        .attr('y1', (d) => d.source.y)
-        .attr('x2', (d) => d.target.x)
-        .attr('y2', (d) => d.target.y)
-
-      node.attr('cx', (d) => d.x).attr('cy', (d) => d.y)
+  },
+  created() {
+    eventBus.$on('rectClickFromHeatMap', (data) => {
+      this.HeatMapData.query = data.x
+      this.HeatMapData.docName = data.y
+      this.HeatMapData.value = data.value
+      console.log('parent got clicked ' + this.HeatMapData.value)
     })
   },
-  methods: {}
+  mounted() {
+    // console.log('mounted()')
+    this.loadGraph()
+  },
+  methods: {
+    loadGraph() {
+      //  console.log('loadGraph()')
+      // Store the locators
+      this.svg = d3.select('#' + this.svgId)
+      this.circles = d3.select('#circles-group')
+      this.lines = d3.select('#lines-group')
+      const drag = (simulation) => {
+        function dragstarted(d) {
+          if (!d3.event.active) simulation.alphaTarget(0.3).restart()
+          d.fx = d.x
+          d.fy = d.y
+        }
+        function dragged(d) {
+          d.fx = d3.event.x
+          d.fy = d3.event.y
+        }
+        function dragended(d) {
+          if (!d3.event.active) simulation.alphaTarget(0)
+          d.fx = null
+          d.fy = null
+        }
+        return d3
+          .drag()
+          .on('start', dragstarted)
+          .on('drag', dragged)
+          .on('end', dragended)
+      }
+      const simulation = d3
+        .forceSimulation(this.nodes)
+        .force(
+          'link',
+          d3.forceLink(this.links).id((d) => d.id)
+        )
+        .force('charge', d3.forceManyBody())
+        .force('x', d3.forceX())
+        .force('y', d3.forceY())
+      // todo: add labels
+      const link = this.svg
+        .append('g')
+        .attr('stroke', '#999')
+        .attr('stroke-opacity', 0.6)
+        .selectAll('line')
+        .data(this.links)
+        .join('line')
+        .attr('stroke-width', (d) => Math.sqrt(d.value))
+      const node = this.svg
+        .append('g')
+        .attr('stroke', 'context-stroke')
+        .attr('stroke-width', 1.5)
+        .selectAll('circle')
+        .data(this.nodes)
+        .join('circle')
+        .attr('r', 5)
+        .attr('fill', (d) => this.colorScale(d.group))
+        .call(drag(simulation))
+      node.append('title').text((d) => d.id)
+      simulation.on('tick', () => {
+        link
+          .attr('x1', (d) => d.source.x)
+          .attr('y1', (d) => d.source.y)
+          .attr('x2', (d) => d.target.x)
+          .attr('y2', (d) => d.target.y)
+        node.attr('cx', (d) => d.x).attr('cy', (d) => d.y)
+      })
+    }
+  }
 }
 </script>
 

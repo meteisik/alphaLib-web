@@ -87,7 +87,6 @@
         :svg-id="charts.heatmap.svgId"
         :hover="false"
         :label="charts.heatmap.label"
-        :dataset="hits"
         :chart-width="charts.heatmap.width"
         :chart-height="charts.heatmap.height"
         max-width="90%"

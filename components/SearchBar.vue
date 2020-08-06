@@ -52,8 +52,13 @@
 </template>
 
 <script>
+import { eventBus } from '@/plugins/bus.js'
+
 export default {
   name: 'SearchBar',
+  plugins: {
+    eventBus
+  },
   props: {
     placeholder: {
       type: String,
@@ -136,14 +141,20 @@ export default {
     query(val) {
       this.$emit('typed', val)
       this.$fetch()
+      eventBus.$emit('typed', val)
+      console.log('query in search bar ' + val)
     },
     selectedSuggestion(val) {
       this.$emit('selected', val)
+      eventBus.$emit('selected', val)
+      console.log('selected suggestion in search bar  ' + val)
     }
   },
   methods: {
     enterPressed() {
       this.$emit('enter', this.query)
+      eventBus.$emit('enter', this.query)
+      console.log('enter pressed in search bar ' + this.query)
     }
   }
 }

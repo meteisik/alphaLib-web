@@ -11,6 +11,7 @@
         :headers="headers"
         :items="tableData(term_vectors[docIndex])"
         multi-sort
+        @mouseover="termSearch($event)"
       ></v-data-table>
     </div>
   </div>
@@ -132,6 +133,11 @@ export default {
           return a.freq < b.freq
         })
       }
+    }
+  },
+  methods: {
+    termSearch(event) {
+      console.log(event)
     }
   }
 }
