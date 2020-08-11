@@ -35,13 +35,8 @@
 
 <script>
 import * as d3 from 'd3'
-import { eventBus } from '@/plugins/bus.js'
-
 export default {
-  name: 'TheGraph',
-  plugins: {
-    eventBus
-  },
+  name: 'TheGraphForAnalytics',
   props: {
     svgId: {
       type: String,
@@ -84,12 +79,7 @@ export default {
       svg: null,
       circles: null,
       lines: null,
-      colorScale: d3.scaleOrdinal(d3.schemeCategory10),
-      HeatMapData: {
-        query: '',
-        docName: '',
-        value: 0
-      }
+      colorScale: d3.scaleOrdinal(d3.schemeCategory10)
     }
   },
   computed: {},
@@ -97,26 +87,14 @@ export default {
     nodes() {
       // select all circles and links (using their shared class)
       // remove them, then redraw them
-      d3.selectAll('circle').remove()
-      d3.selectAll('line').remove()
       this.loadGraph()
     }
   },
-  created() {
-    eventBus.$on('rectClickFromHeatMap', (data) => {
-      this.HeatMapData.query = data.x
-      this.HeatMapData.docName = data.y
-      this.HeatMapData.value = data.value
-      console.log('parent got clicked ' + this.HeatMapData.value)
-    })
-  },
   mounted() {
-    // console.log('mounted()')
     this.loadGraph()
   },
   methods: {
     loadGraph() {
-      //  console.log('loadGraph()')
       // Store the locators
       this.svg = d3.select('#' + this.svgId)
       this.circles = d3.select('#circles-group')
@@ -171,7 +149,6 @@ export default {
         .attr('r', (d) => d.radius)
         .attr('fill', (d) => this.colorScale(d.group))
         .call(drag(simulation))
-
       simulation.on('tick', () => {
         link
           .attr('x1', (d) => d.source.x)

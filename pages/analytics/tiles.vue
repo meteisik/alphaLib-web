@@ -24,18 +24,18 @@
       ></HeatMapWrapperForAnalytics>
     </v-col>
     <v-col cols="3">
-      <GraphWrapper
+      <GraphWrapperForAnalytics
         :id="charts.conceptmap.id"
         class="mb-2"
         :div-id="charts.conceptmap.divId"
         :svg-id="charts.conceptmap.svgId"
         :hover="false"
         :label="charts.conceptmap.label"
-        :dataset="hits"
+        :dataset="responses"
         :chart-width="charts.conceptmap.width"
         :chart-height="charts.conceptmap.height"
         max-width="100%"
-      ></GraphWrapper>
+      ></GraphWrapperForAnalytics>
     </v-col>
     <v-col cols="3">
       <HeatMapWrapperForAnalytics
@@ -69,7 +69,7 @@
         </v-row>
       </v-col>
       <v-col cols="3">
-        <GraphWrapper
+        <GraphWrapperForAnalytics
           :id="charts.conceptmap.id"
           class="mb-2"
           :div-id="charts.conceptmap.divId"
@@ -80,10 +80,10 @@
           :chart-width="charts.conceptmap.width"
           :chart-height="charts.conceptmap.height"
           max-width="100%"
-        ></GraphWrapper>
+        ></GraphWrapperForAnalytics>
       </v-col>
       <v-col cols="3">
-        <GraphWrapper
+        <GraphWrapperForAnalytics
           :id="charts.conceptmap.id"
           class="mb-2"
           :div-id="charts.conceptmap.divId"
@@ -94,7 +94,7 @@
           :chart-width="charts.conceptmap.width"
           :chart-height="charts.conceptmap.height"
           max-width="100%"
-        ></GraphWrapper>
+        ></GraphWrapperForAnalytics>
       </v-col>
     </v-row>
   </v-row>
@@ -103,15 +103,19 @@
 <script>
 import HeatMapWrapperForAnalytics from '~/components/HeatMap/HeatMapWrapperForAnalytics'
 import DocPortionWrapper from '~/components/HeatMap/DocPortionWrapper'
-import GraphWrapper from '~/components/ConceptMap/GraphWrapper'
 import { eventBus } from '@/plugins/bus.js'
+import GraphWrapperForAnalytics from '~/components/ConceptMap/GraphWrapperForAnalytics'
 
 export default {
   name: 'PageAnalyticsTiles',
   plugins: {
     eventBus
   },
-  components: { DocPortionWrapper, HeatMapWrapperForAnalytics, GraphWrapper },
+  components: {
+    GraphWrapperForAnalytics,
+    DocPortionWrapper,
+    HeatMapWrapperForAnalytics
+  },
   layout: 'withsearchbar',
   watchQuery: true,
   async fetch() {
@@ -228,7 +232,7 @@ export default {
           svgId: 'heatmap-chart-svg-element',
           label: 'Concept Intensity Across Documents',
           width: 200,
-          height: 400
+          height: 500
         },
         heatmap2: {
           id: 'heatmap2',
@@ -236,7 +240,7 @@ export default {
           svgId: 'heatmap2-chart-svg-element',
           label: 'Positional Concept Intensity Across Documents',
           width: 150,
-          height: 150
+          height: 500
         },
         conceptmap: {
           id: 'conceptmap',
@@ -245,6 +249,11 @@ export default {
           label: 'Concept Map',
           width: 200,
           height: 500
+        },
+        interactionData: {
+          query: '',
+          docName: '',
+          freq: 0
         }
       },
       responses: [],
@@ -321,23 +330,29 @@ export default {
     '$route.query.size': '$fetch',
     '$route.query.q': '$fetch'
   },
-  created() {
-    eventBus.$on('selected', (val) => {
-      this.search = val
-      console.log('tiles got changed query ' + val)
-    })
-  },
   mounted() {
     if (this.q) this.$store.commit('ADD_QUERY', { q: this.q })
     this.resize()
     window.addEventListener('resize', this.resize)
+  },
+  created() {
+    eventBus.$on('rectClickFromHeatMap', (val) => {
+      this.interactionData.query = val.x
+      this.interactionData.docName = val.y
+      this.interactionData.freq = val.value
+      console.log(
+        'tiles got changed  ' +
+          this.interactionData.query +
+          this.interactionData.docName
+      )
+    })
   },
   methods: {
     resize() {
       const heatDiv = document.getElementById(this.charts.heatmap.divId)
       if (heatDiv) {
         // this.charts.heatmap.width = heatDiv.clientWidth - 30
-        this.charts.heatmap.width = 300 + this.responses.length * 30
+        this.charts.heatmap.width = 300 + this.responses.length * 10
         this.charts.heatmap.height = this.heatmapHeight
         document
           .getElementById(this.charts.heatmap.svgId)
@@ -352,10 +367,10 @@ export default {
           this.charts.heatmap2.divId + doc._id
         )
         if (heatDiv2) {
-          // console.log('found')
+          console.log('found')
           // this.charts.heatmap.width = heatDiv.clientWidth - 30
           this.charts.heatmap2.width =
-            400 + this.filteredDocuments(doc._id).length * 20
+            150 + this.filteredDocuments(doc._id).length * 1
           this.charts.heatmap2.height = this.heatmapHeight
           document
             .getElementById(this.charts.heatmap2.svgId + doc._id)

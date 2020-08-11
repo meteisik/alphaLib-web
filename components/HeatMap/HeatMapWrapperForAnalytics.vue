@@ -45,11 +45,11 @@ export default {
     },
     chartHeight: {
       type: Number,
-      default: 100
+      default: 500
     },
     chartWidth: {
       type: Number,
-      default: 100
+      default: 300
     },
     flat: {
       type: Boolean,

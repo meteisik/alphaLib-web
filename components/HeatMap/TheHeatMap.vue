@@ -42,11 +42,11 @@ export default {
     },
     height: {
       type: Number,
-      default: 0
+      default: 500
     },
     width: {
       type: Number,
-      default: 0
+      default: 300
     },
     dataset: {
       type: Array,
