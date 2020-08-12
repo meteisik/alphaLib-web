@@ -11,6 +11,7 @@
         :style="'fill: ' + colorScale(item.value) + ';'"
         class="rect"
         @click="rectClick(item)"
+        @mouseenter="hoverHighlight(item)"
       >
         <title>{{ item.value }}</title>
       </rect>
@@ -168,6 +169,7 @@ export default {
         .attr('dy', '0.8em')
         .attr('dx', '0.5em')
         .on('click', this.columnClick)
+        .on('hover', this.columnHover)
         .style('text-anchor', 'start')
 
       // Draw Y axis
@@ -176,10 +178,16 @@ export default {
         .selectAll('text')
         .attr('class', 'body-1')
         .on('click', this.rowClick)
+        .on('hover', this.rowHover)
     },
     rectClick(item) {
       console.log('rect click sent : ' + JSON.stringify(item))
       eventBus.$emit('rectClickFromHeatMap', item)
+      // this.$emit('rectClickFromHeatMap', 'string')
+    },
+    hoverHighlight(item) {
+      console.log('rect highlight sent : ' + JSON.stringify(item))
+      eventBus.$emit('hoverHighlightFromHeatMap', item)
       // this.$emit('rectClickFromHeatMap', 'string')
     },
     columnClick(item) {

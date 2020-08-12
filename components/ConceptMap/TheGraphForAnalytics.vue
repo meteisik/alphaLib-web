@@ -79,7 +79,12 @@ export default {
       svg: null,
       circles: null,
       lines: null,
-      colorScale: d3.scaleOrdinal(d3.schemeCategory10)
+      colorScale: d3.scaleOrdinal(d3.schemeCategory10),
+      HeatMapData: {
+        que: '',
+        docName: '',
+        value: 0
+      }
     }
   },
   computed: {},

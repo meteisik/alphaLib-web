@@ -251,7 +251,7 @@ export default {
           height: 500
         },
         interactionData: {
-          query: '',
+          que: '',
           docName: '',
           freq: 0
         }
@@ -335,18 +335,21 @@ export default {
     this.resize()
     window.addEventListener('resize', this.resize)
   },
+  /*
   created() {
     eventBus.$on('rectClickFromHeatMap', (val) => {
-      this.interactionData.query = val.x
-      this.interactionData.docName = val.y
-      this.interactionData.freq = val.value
-      console.log(
-        'tiles got changed  ' +
-          this.interactionData.query +
-          this.interactionData.docName
-      )
+      if (val !== undefined) {
+        this.interactionData.que = val.x
+        this.interactionData.docName = val.y
+        this.interactionData.freq = val.value
+        console.log(
+          'tiles got changed  ' +
+            this.interactionData.que +
+            this.interactionData.docName
+        )
+      }
     })
-  },
+  }, */
   methods: {
     resize() {
       const heatDiv = document.getElementById(this.charts.heatmap.divId)

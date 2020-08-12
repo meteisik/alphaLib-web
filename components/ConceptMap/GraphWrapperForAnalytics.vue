@@ -17,17 +17,22 @@
         :height="chartHeight"
         :links="getQueryNodes.links"
         :nodes="getQueryNodes.allNodes"
+        :dataset="this.dataset"
       />
     </v-card-text>
   </v-card>
 </template>
 
 <script>
+import * as d3 from 'd3'
 import TheGraphForAnalytics from '~/components/ConceptMap/TheGraphForAnalytics'
 // import { eventBus } from '@/plugins/bus'
 export default {
   name: 'GraphWrapperForAnalytics',
   components: { TheGraphForAnalytics },
+  // plugins: {
+  //   eventBus
+  // },
   props: {
     id: {
       type: String,
@@ -77,6 +82,11 @@ export default {
       type: Array,
       default() {
         return []
+      },
+      HeatMapData: {
+        que: '',
+        docName: '',
+        value: 0
       }
     }
   },
@@ -194,8 +204,35 @@ export default {
       return { allNodes, links }
     }
   },
-
-  methods: {}
+  // created() {
+  //   eventBus.$on('rectClickFromHeatMap', (data) => {
+  //     if (typeof data !== 'undefined') {
+  //       this.HeatMapData.que = data.x
+  //       this.HeatMapData.docName = data.y
+  //       this.HeatMapData.value = data.value
+  //       console.log('graphwrapper-> got click event ' + this.HeatMapData.value)
+  //     }
+  //   })
+  //   eventBus.$on('hoverHighlightFromHeatMap', (data) => {
+  //     if (typeof data !== 'undefined') {
+  //       if (typeof data.x !== 'undefined') {
+  //         this.HeatMapData.que = data.x
+  //       }
+  //       this.HeatMapData.docName = data.y
+  //       this.HeatMapData.value = data.value
+  //       this.nodeHighlight(this.HeatMapData.que, this.HeatMapData.docName)
+  //       console.log(
+  //         'graphwrapper-> got highlighted event ' + this.HeatMapData.value
+  //       )
+  //     }
+  //   })
+  // },
+  methods: {
+    nodeHighlight(query, docName) {
+      const highlighted = d3.selectAll('#circles-group').title
+      console.log(highlighted)
+    }
+  }
 }
 </script>
 

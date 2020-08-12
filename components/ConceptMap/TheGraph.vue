@@ -35,12 +35,12 @@
 
 <script>
 import * as d3 from 'd3'
-import { eventBus } from '@/plugins/bus.js'
+// import { eventBus } from '@/plugins/bus.js'
 
 export default {
   name: 'TheGraph',
   plugins: {
-    eventBus
+    // eventBus
   },
   props: {
     svgId: {
@@ -79,17 +79,18 @@ export default {
       }
     }
   },
+  dataset: {
+    type: Array,
+    default() {
+      return []
+    }
+  },
   data() {
     return {
       svg: null,
       circles: null,
       lines: null,
-      colorScale: d3.scaleOrdinal(d3.schemeCategory10),
-      HeatMapData: {
-        query: '',
-        docName: '',
-        value: 0
-      }
+      colorScale: d3.scaleOrdinal(d3.schemeCategory10)
     }
   },
   computed: {},
@@ -101,14 +102,6 @@ export default {
       d3.selectAll('line').remove()
       this.loadGraph()
     }
-  },
-  created() {
-    eventBus.$on('rectClickFromHeatMap', (data) => {
-      this.HeatMapData.query = data.x
-      this.HeatMapData.docName = data.y
-      this.HeatMapData.value = data.value
-      console.log('parent got clicked ' + this.HeatMapData.value)
-    })
   },
   mounted() {
     // console.log('mounted()')
@@ -170,7 +163,9 @@ export default {
         .join('circle')
         .attr('r', (d) => d.radius)
         .attr('fill', (d) => this.colorScale(d.group))
+        .text((d) => d.title)
         .call(drag(simulation))
+      console.log(this.nodes)
 
       simulation.on('tick', () => {
         link

@@ -98,8 +98,10 @@ export default {
     heatmapData() {
       const res = []
       for (const transaction of this.dataset) {
+        console.log(transaction)
         for (const doc of transaction.response.hits.hits) {
           res.push({
+            id: doc._id,
             x: transaction.query,
             y: doc._source.path.virtual,
             value: doc.highlight.content.length
