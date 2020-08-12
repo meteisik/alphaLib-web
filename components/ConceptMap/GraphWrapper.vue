@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import * as d3 from 'd3'
+// import * as d3 from 'd3'
 import TheGraph from '@/components/ConceptMap/TheGraph'
 import { eventBus } from '@/plugins/bus'
 export default {
