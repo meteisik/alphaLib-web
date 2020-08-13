@@ -36,6 +36,7 @@
           hover
           rounded
           link
+          @click="renderInfoBox(doc)"
           :to="'docs/' + doc._id"
         >
           <v-card-title class="primary--text">
@@ -79,7 +80,14 @@
       </v-row>
     </v-col>
     <v-col cols="5" align-self="start">
-      <TheInfoBox class="mb-2" max-width="90%" :hover="false"></TheInfoBox>
+      <TheInfoBox
+        v-show="showInfoBox"
+        class="mb-2"
+        max-width="90%"
+        :hover="false"
+        :meta="infoData"
+      ></TheInfoBox>
+
       <HeatMapWrapper
         :id="charts.heatmap.id"
         class="mb-2"
@@ -87,6 +95,7 @@
         :svg-id="charts.heatmap.svgId"
         :hover="false"
         :label="charts.heatmap.label"
+        :dataset="hits"
         :chart-width="charts.heatmap.width"
         :chart-height="charts.heatmap.height"
         max-width="90%"
@@ -103,7 +112,7 @@
         :chart-height="charts.conceptmap.height"
         max-width="90%"
       ></GraphWrapper>
-      <BarChartWrapper
+       <BarChartWrapper
         :svg-id="charts.barchart.svgId"
         :data-set="getbarChartData"
         :chart-width="charts.barchart.svgWidth"
@@ -115,6 +124,7 @@
         class="mb-2"
         max-width="90%"
       ></BarChartWrapper>
+    
     </v-col>
   </v-row>
 </template>
@@ -179,6 +189,8 @@ export default {
     this.search = res.data
   },
   data: () => ({
+    showInfoBox: false,
+    infoData: {},
     // Search configuration
     paginationCircle: false,
     paginationDisabled: false,
@@ -203,6 +215,7 @@ export default {
         width: 500,
         height: 700
       },
+        
       barchart: {
         svgId: 'barchart-svg-element',
         svgWidth: 500,
@@ -214,7 +227,7 @@ export default {
     querryFreq: 0
   }),
   computed: {
-    getbarChartData() {
+      getbarChartData() {
       const allLabels = []
       const allHits = this.hits
       let documentHits = {}
@@ -291,12 +304,12 @@ export default {
   },
   layout: 'withsearchbar',
   mounted() {
-    if (this.q) this.$store.commit('ADD_QUERY', { q: this.q })
+     if (this.q) this.$store.commit('ADD_QUERY', { q: this.q })
     this.resize()
     window.addEventListener('resize', this.resize)
   },
   methods: {
-    createBarChartArray(markedString, finalArray, allWords) {
+      createBarChartArray(markedString, finalArray, allWords) {
       const allLabels = allWords
       const final = finalArray
       // result will be an array of all words in between the <mark></mark> tags
@@ -322,8 +335,40 @@ export default {
             value: 1
           })
         }
+
+    makeDate(dateString) {
+      if (!dateString) return
+      return new Date(dateString).toDateString()
+    },
+    async getDocAbstract(docId) {
+      const res = await this.$axios.get('/api/literature/_doc/' + docId)
+      return res.data.found
+        ? `${res.data._source.content.substring(0, 500)}...`
+        : ''
+    },
+    async renderInfoBox(doc) {
+      if (!this.showInfoBox) this.showInfoBox = true
+      this.infoData = { ...this.infoData, isLoading: true }
+      const {
+        title = '',
+        author = '',
+        created = null,
+        abstract = '',
+        image = '',
+        raw
+      } = doc._source.meta
+      this.infoData = {
+        doc_id: doc._id,
+        image,
+        title,
+        author,
+        created_date: this.makeDate(created),
+        abstract:
+          abstract.length < 1 ? await this.getDocAbstract(doc._id) : abstract,
+        number_of_pages: parseInt(raw['xmpTPg:NPages'], 10),
+        isLoading: false
       }
-      return final
+        return final
     },
     getFreq(result) {
       this.querryFreq = result
@@ -340,6 +385,7 @@ export default {
           .getElementById(this.charts.heatmap.svgId)
           .setAttribute('height', this.charts.heatmap.height)
       }
+
       const conceptDiv = document.getElementById(this.charts.conceptmap.divId)
       if (conceptDiv) {
         this.charts.conceptmap.width = conceptDiv.clientWidth - 30
@@ -350,7 +396,7 @@ export default {
           .getElementById(this.charts.conceptmap.svgId)
           .setAttribute('height', this.charts.conceptmap.height)
       }
-    },
+       },
     findWord(label, allLabels) {
       this.labels = allLabels
       for (let c = 0; c < allLabels.length; c++) {
@@ -365,3 +411,4 @@ export default {
 </script>
 
 <style scoped></style>
+
