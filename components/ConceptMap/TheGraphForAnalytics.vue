@@ -35,8 +35,12 @@
 
 <script>
 import * as d3 from 'd3'
+import { eventBus } from '@/plugins/bus.js'
 export default {
   name: 'TheGraphForAnalytics',
+  plugins: {
+    eventBus
+  },
   props: {
     svgId: {
       type: String,
@@ -92,15 +96,61 @@ export default {
     nodes() {
       // select all circles and links (using their shared class)
       // remove them, then redraw them
+      d3.selectAll('circle').remove()
+      d3.selectAll('line').remove()
       this.loadGraph()
     }
   },
   mounted() {
     this.loadGraph()
   },
+  created() {
+    eventBus.$on('rectClickFromHeatMap', (data) => {
+      if (data != null) {
+        this.HeatMapData.que = data.x
+        this.HeatMapData.docName = data.y
+        this.HeatMapData.value = data.value
+        this.HeatMapData.idDoc = data.id
+      }
+    })
+    eventBus.$on('hoverHighlightFromHeatMap', (data) => {
+      if (data != null) {
+        this.HeatMapData.que = data.x
+        this.HeatMapData.docName = data.y
+        this.HeatMapData.value = data.value
+        this.HeatMapData.idDoc = data.id
+        this.nodeHighlight(
+          this.HeatMapData.que,
+          this.HeatMapData.idDoc,
+          this.HeatMapData.docName,
+          this.HeatMapData.value
+        )
+      }
+    })
+  },
   methods: {
+    nodeHighlight(query, idDoc, docName, value) {
+      if (this.nodes !== undefined) {
+        for (const node of this.nodes) {
+          if (node.title === query) {
+            node.group = 'Selected Query'
+            d3.selectAll('circle').remove()
+            d3.selectAll('line').remove()
+            this.loadGraph()
+          }
+          if (node.id === idDoc) {
+            node.group = 'Selected Cited Works'
+            d3.selectAll('circle').remove()
+            d3.selectAll('line').remove()
+            this.loadGraph()
+          }
+        }
+      }
+    },
     loadGraph() {
       // Store the locators
+      d3.selectAll('circle').remove()
+      d3.selectAll('line').remove()
       this.svg = d3.select('#' + this.svgId)
       this.circles = d3.select('#circles-group')
       this.lines = d3.select('#lines-group')
@@ -118,7 +168,6 @@ export default {
           if (!d3.event.active) simulation.alphaTarget(0)
           d.fx = null
           d.fy = null
-          console.log('Node Label: ', d.title)
         }
         return d3
           .drag()

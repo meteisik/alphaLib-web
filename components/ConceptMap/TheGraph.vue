@@ -36,7 +36,6 @@
 <script>
 import * as d3 from 'd3'
 // import { eventBus } from '@/plugins/bus.js'
-
 export default {
   name: 'TheGraph',
   plugins: {
@@ -165,8 +164,6 @@ export default {
         .attr('fill', (d) => this.colorScale(d.group))
         .text((d) => d.title)
         .call(drag(simulation))
-      console.log(this.nodes)
-
       simulation.on('tick', () => {
         link
           .attr('x1', (d) => d.source.x)

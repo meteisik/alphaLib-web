@@ -24,15 +24,10 @@
 </template>
 
 <script>
-import * as d3 from 'd3'
 import TheGraphForAnalytics from '~/components/ConceptMap/TheGraphForAnalytics'
-// import { eventBus } from '@/plugins/bus'
 export default {
   name: 'GraphWrapperForAnalytics',
   components: { TheGraphForAnalytics },
-  // plugins: {
-  //   eventBus
-  // },
   props: {
     id: {
       type: String,
@@ -90,9 +85,18 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      HeatMapData: {
+        que: '',
+        docName: '',
+        value: 0,
+        id: ''
+      }
+    }
+  },
   computed: {
     getQueryNodes() {
-      console.log('GraphWrapperForAnalytics')
       const queryNodes = []
       let allNodes = []
       const _dataset = this.dataset
@@ -113,20 +117,16 @@ export default {
           // create an ordered array of the number of documents results for each query
           const index = _dataset.indexOf(d) // initial set
           radii[index] = d.response.hits.hits.length
-          console.log('query frequencies: ', radii[index])
           radii[index] = radii[index] / 2 + 5
         }
         /*
         frequencies[index] = d.frequency
       }
-
       frequencies.sort(function(a, b) {
         // sort frequencies
         return a - b
       })
-
       frequenciesMin = Math.min(...frequencies) // smallest frequency
-
       for (const d of frequencies) {
         const index = frequencies.indexOf(d)
         frequencies[index] -= frequenciesMin
@@ -137,7 +137,6 @@ export default {
       if (frequenciesMax === 0) {
         frequenciesMax = range[0] + range[1] / 2
       }
-
       let num = 0
       for (const d of frequencies) {
         const multiplier = d / frequenciesMax
@@ -147,7 +146,6 @@ export default {
         for (const d of _dataset) {
           const index = _dataset.indexOf(d)
           // create query node
-          console.log('radii: ', radii[index])
           queryNodes[index] = {
             title: d.query,
             group: 'Query',
@@ -204,35 +202,7 @@ export default {
       return { allNodes, links }
     }
   },
-  // created() {
-  //   eventBus.$on('rectClickFromHeatMap', (data) => {
-  //     if (typeof data !== 'undefined') {
-  //       this.HeatMapData.que = data.x
-  //       this.HeatMapData.docName = data.y
-  //       this.HeatMapData.value = data.value
-  //       console.log('graphwrapper-> got click event ' + this.HeatMapData.value)
-  //     }
-  //   })
-  //   eventBus.$on('hoverHighlightFromHeatMap', (data) => {
-  //     if (typeof data !== 'undefined') {
-  //       if (typeof data.x !== 'undefined') {
-  //         this.HeatMapData.que = data.x
-  //       }
-  //       this.HeatMapData.docName = data.y
-  //       this.HeatMapData.value = data.value
-  //       this.nodeHighlight(this.HeatMapData.que, this.HeatMapData.docName)
-  //       console.log(
-  //         'graphwrapper-> got highlighted event ' + this.HeatMapData.value
-  //       )
-  //     }
-  //   })
-  // },
-  methods: {
-    nodeHighlight(query, docName) {
-      const highlighted = d3.selectAll('#circles-group').title
-      console.log(highlighted)
-    }
-  }
+  methods: {}
 }
 </script>
 

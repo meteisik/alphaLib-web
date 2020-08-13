@@ -23,15 +23,10 @@
 </template>
 
 <script>
-// import * as d3 from 'd3'
 import TheGraph from '@/components/ConceptMap/TheGraph'
-import { eventBus } from '@/plugins/bus'
 export default {
   name: 'GraphWrapper',
   components: { TheGraph },
-  plugins: {
-    eventBus
-  },
   props: {
     id: {
       type: String,
@@ -133,14 +128,12 @@ export default {
           let highlightString = ''
           const indexOfCurrentDoc = _dataset.indexOf(d)
           // create node for current dataset element
-
           for (const c of d.highlight.content) {
             highlightString += c
           }
           highlightString = highlightString.split('<mark>').join('') // cleaning up highlights
           highlightString = highlightString.split('</mark>').join('')
           highlightString = highlightString.replace(/[0-9]/g, '')
-
           if (d._source.meta.title === undefined) {
             docNodes[indexOfCurrentDoc] = {
               id: d._id,
@@ -210,56 +203,7 @@ export default {
       return { nodes, links }
     }
   },
-  created() {
-    eventBus.$on('rectClickFromHeatMap', (data) => {
-      if (data != null) {
-        this.HeatMapData.que = data.x
-        this.HeatMapData.docName = data.y
-        this.HeatMapData.value = data.value
-        this.HeatMapData.idDoc = data.id
-        console.log(
-          'graph wrapper component-> got click event ' + this.HeatMapData.value
-        )
-      }
-    })
-    eventBus.$on('hoverHighlightFromHeatMap', (data) => {
-      console.log(JSON.stringify(data))
-      if (data != null) {
-        this.HeatMapData.que = data.x
-        this.HeatMapData.docName = data.y
-        this.HeatMapData.value = data.value
-        this.HeatMapData.idDoc = data.id
-        this.nodeHighlight(
-          this.HeatMapData.que,
-          this.HeatMapData.id,
-          this.HeatMapData.docName,
-          this.HeatMapData.value
-        )
-        console.log(
-          'graph wrapper component-> got highlighted event ' +
-            this.HeatMapData.value
-        )
-      }
-    })
-  },
   methods: {
-    nodeHighlight(query, idDoc, docName, value) {
-      if (query != null) {
-        if (docName != null) {
-          console.log(
-            'in nodehighlights in graph wrapper ' + query + idDoc,
-            docName,
-            value
-          )
-          let selectedNodes = []
-          selectedNodes = this.docNodes.filter((d) => {
-            if (d.id === this.HeatMapData.id) {
-              console.log('node selected ' + JSON.stringify(selectedNodes))
-            }
-          })
-        }
-      }
-    },
     // method which returns all uncommon words to be used as the concepts of a document
     getNoneStopWords(sentence) {
       // method to remove common words
