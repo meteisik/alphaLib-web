@@ -4,6 +4,7 @@
       <g :transform="'translate(' + getMargin.left + ',' + getMargin.top + ')'">
         <rect
           v-for="(point, index) in data"
+          :id="point.label"
           :key="index"
           class="rectangles"
           fill="#1fab89"
@@ -43,14 +44,17 @@
 </template>
 
 <script>
-// import { axisRight, axisLeft } from 'd3'
 import { scaleLinear, scaleBand } from 'd3-scale'
 import { max, min } from 'd3-array'
 import { select } from 'd3-selection'
 import 'd3-transition'
+import { eventBus } from '@/plugins/bus.js'
 
 export default {
   name: 'BarChart',
+  plugins: {
+    eventBus
+  },
   props: {
     title: String,
     xKey: String,
@@ -63,7 +67,12 @@ export default {
   },
   data: () => ({
     svgWidth: 0,
-    redrawToggle: true
+    redrawToggle: true,
+    HeatMapData: {
+      query: '',
+      docName: '',
+      value: 0
+    }
   }),
   computed: {
     innerWidth() {
@@ -76,7 +85,7 @@ export default {
       return {
         top: 0,
         right: this.chartWidth * 0.3,
-        bottom: this.chartHeight * 0.03,
+        bottom: this.chartHeight * 0.03, // * 0.0153
         left: this.chartWidth * 0.2
       }
     },
@@ -118,7 +127,26 @@ export default {
     this.putMargin()
     this.createLabels()
   },
+  created() {
+    eventBus.$on('rectClickFromHeatMap', (data) => {
+      this.HeatMapData.query = data.x
+      this.HeatMapData.docName = data.y
+      this.HeatMapData.value = data.value
+      this.rectClick(data.x)
+      console.log('parent got clicked ' + this.HeatMapData.value)
+    })
+  },
   methods: {
+    rectClick(index) {
+      const rects = document.getElementsByClassName('rectangles')
+      for (let i = 0; i < rects.length; i++) {
+        rects[i].style.fill = 'orange'
+      }
+      const idCheck = document.getElementById(index)
+      if (idCheck !== undefined && idCheck !== null) {
+        document.getElementById(index).style.fill = '#68b0ab'
+      }
+    },
     putMargin() {
       this.selectG.attr(
         'transform',
@@ -152,12 +180,12 @@ export default {
 .rectangles {
   fill: orange;
 }
-.svg-container {
+/* .svg-container {
   display: inline-block;
   position: relative;
   width: 100%;
   padding-bottom: 1%;
   vertical-align: top;
   overflow: hidden;
-}
+} */
 </style>

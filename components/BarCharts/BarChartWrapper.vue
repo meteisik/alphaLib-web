@@ -1,15 +1,25 @@
-<!-- Wrapper is absolutely not ready, this is just a sketch -->
 <template>
-  <div>
-    <bar-chart
-      :svg-id="svgId"
-      :chart-width="chartWidth"
-      :chart-height="chartHeight"
-      x-key="label"
-      y-key="value"
-      :data="sortedData"
-    />
-  </div>
+  <v-card
+    class="mx-auto"
+    :flat="flat"
+    :hover="hover"
+    :rounded="rounded"
+    :max-width="maxWidth"
+  >
+    <v-card-title>
+      {{ label }}
+    </v-card-title>
+    <v-card-text :id="divId">
+      <bar-chart
+        :svg-id="svgId"
+        :chart-width="chartWidth"
+        :chart-height="chartHeight"
+        x-key="label"
+        y-key="value"
+        :data="sortedData"
+      />
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
@@ -44,6 +54,34 @@ export default {
     reducedData: {
       type: Boolean,
       default: false
+    },
+    rounded: {
+      type: Boolean,
+      default: false
+    },
+    flat: {
+      type: Boolean,
+      default: false
+    },
+    maxWidth: {
+      type: String,
+      default: '100%'
+    },
+    hover: {
+      type: Boolean,
+      default: false
+    },
+    outlined: {
+      type: Boolean,
+      default: false
+    },
+    divId: {
+      type: String,
+      default: 'barchart-div'
+    },
+    label: {
+      type: String,
+      default: 'Bar Graph for words'
     }
   },
   asyncData() {

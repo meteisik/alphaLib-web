@@ -38,18 +38,24 @@
       ></GraphWrapperForAnalytics>
     </v-col>
     <v-col cols="3">
-      <HeatMapWrapperForAnalytics
-        :id="charts.heatmap.id"
+      <BarChartWrapperForAnalytics
+        :svg-id="charts.barchart.svgId"
+        :data-set="responses"
+        :chart-width="charts.barchart.svgWidth"
+        :chart-height="charts.barchart.svgHeight"
+        x-key="query"
+        y-key="num"
+        :label="charts.barchart.label"
         class="mb-2"
-        :div-id="charts.heatmap.divId"
-        :svg-id="charts.heatmap.svgId"
-        :hover="false"
-        :label="charts.heatmap.label"
-        :dataset="responses"
-        :chart-width="charts.heatmap.width"
-        :chart-height="charts.heatmap.height"
         max-width="100%"
-      ></HeatMapWrapperForAnalytics>
+      ></BarChartWrapperForAnalytics>
+      <div>
+        <v-data-table
+          :headers="headers"
+          :items="tableData(term_vectors[0])"
+          multi-sort
+        ></v-data-table>
+      </div>
     </v-col>
     <v-row>
       <v-col cols="3">
@@ -105,6 +111,7 @@ import HeatMapWrapperForAnalytics from '~/components/HeatMap/HeatMapWrapperForAn
 import DocPortionWrapper from '~/components/HeatMap/DocPortionWrapper'
 import { eventBus } from '@/plugins/bus.js'
 import GraphWrapperForAnalytics from '~/components/ConceptMap/GraphWrapperForAnalytics'
+import BarChartWrapperForAnalytics from '~/components/BarCharts/BarChartWrapperForAnalytics'
 
 export default {
   name: 'PageAnalyticsTiles',
@@ -114,7 +121,8 @@ export default {
   components: {
     GraphWrapperForAnalytics,
     DocPortionWrapper,
-    HeatMapWrapperForAnalytics
+    HeatMapWrapperForAnalytics,
+    BarChartWrapperForAnalytics
   },
   layout: 'withsearchbar',
   watchQuery: true,
@@ -217,6 +225,49 @@ export default {
     this.responses = res
     this.fullTextResponses = fullText
   },
+  async asyncData({ query, $axios }) {
+    let match = { match_all: {} }
+    if (query.q)
+      match = {
+        match_phrase: { content: query.q }
+      }
+    const docs = await $axios
+      .post('/api/literature/_search', {
+        sort: ['_score'],
+        _source: ['meta', 'content'],
+        query: match,
+        highlight: {
+          type: 'unified',
+          order: 'score',
+          pre_tags: ['<mark>'],
+          post_tags: ['</mark>'],
+          fields: {
+            content: { number_of_fragments: 5 }
+          }
+        }
+      })
+      .then((res) => {
+        return res.data.hits.hits
+      })
+      .catch((e) => {
+        return []
+      })
+    const termVectors = await $axios
+      .post('/api/literature/_mtermvectors', {
+        ids: docs.map((d) => d._id),
+        parameters: {
+          fields: ['content'],
+          term_statistics: true
+        }
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((e) => {
+        return {}
+      })
+    return { docs, term_vectors: termVectors.docs }
+  },
   data() {
     return {
       // Search configuration
@@ -254,10 +305,26 @@ export default {
           que: '',
           docName: '',
           freq: 0
+        },
+        barchart: {
+          svgId: 'barchart-svg-element',
+          svgWidth: 300,
+          svgHeight: 150,
+          label: 'Query occurences in all Docs'
         }
       },
       responses: [],
-      fullTextResponses: []
+      fullTextResponses: [],
+      headers: [
+        {
+          text: 'Term',
+          value: 'term'
+        },
+        {
+          text: 'Frequency',
+          value: 'freq'
+        }
+      ]
     }
   },
   computed: {
@@ -323,6 +390,28 @@ export default {
     },
     heatmapHeight() {
       return 500
+    },
+    tableData() {
+      // data for the table of words
+      return (document) => {
+        // Getting the terms object
+        const terms = document.term_vectors.content.terms
+        // Turning the object into an array
+        const termsList = Object.keys(terms)
+
+        // Building the result array
+        const result = []
+        for (const t of termsList) {
+          result.push({
+            term: t,
+            freq: terms[t].term_freq
+          })
+        }
+        // Sort by frequency and return the result
+        return result.sort((a, b) => {
+          return a.freq < b.freq
+        })
+      }
     }
   },
   watch: {

@@ -103,6 +103,18 @@
         :chart-height="charts.conceptmap.height"
         max-width="90%"
       ></GraphWrapper>
+      <BarChartWrapper
+        :svg-id="charts.barchart.svgId"
+        :data-set="getbarChartData"
+        :chart-width="charts.barchart.svgWidth"
+        :chart-height="charts.barchart.svgHeight"
+        x-key="label"
+        y-key="value"
+        :reduced-data="charts.barchart.reducedData"
+        :label="charts.barchart.label"
+        class="mb-2"
+        max-width="90%"
+      ></BarChartWrapper>
     </v-col>
   </v-row>
 </template>
@@ -111,9 +123,10 @@
 import TheInfoBox from '~/components/InfoBox/TheInfoBox'
 import HeatMapWrapper from '~/components/HeatMap/HeatMapWrapper'
 import GraphWrapper from '~/components/ConceptMap/GraphWrapper'
+import BarChartWrapper from '~/components/BarCharts/BarChartWrapper'
 export default {
   name: 'PageDocsIndex',
-  components: { GraphWrapper, HeatMapWrapper, TheInfoBox },
+  components: { GraphWrapper, HeatMapWrapper, TheInfoBox, BarChartWrapper },
   watchQuery: true,
   async fetch() {
     // Get query params
@@ -189,10 +202,49 @@ export default {
         label: 'Concept Map',
         width: 500,
         height: 700
+      },
+      barchart: {
+        svgId: 'barchart-svg-element',
+        svgWidth: 500,
+        svgHeight: 200,
+        reducedData: false,
+        label: 'Highlight Occurences'
       }
-    }
+    },
+    querryFreq: 0
   }),
   computed: {
+    getbarChartData() {
+      const allLabels = []
+      const allHits = this.hits
+      let documentHits = {}
+      let result = []
+      if (this.$route.query.q !== undefined) {
+        for (let i = 0; i < allHits.length; i++) {
+          if (allHits[i].highlight !== undefined) {
+            documentHits = allHits[i].highlight.content
+          } else {
+            documentHits = {}
+          }
+          if (documentHits !== {}) {
+            for (let j = 0; j < documentHits.length; j++) {
+              // get the marked words in the array of objects form
+              result = this.createBarChartArray(
+                documentHits[j],
+                result,
+                allLabels
+              )
+            }
+          }
+        }
+      }
+      const objQ = result.find((obj) => {
+        return obj.label === this.q
+      })
+      this.getFreq(objQ)
+      // this.addStore(objQ)
+      return result
+    },
     q() {
       return this.$route.query.q || null
     },
@@ -244,6 +296,38 @@ export default {
     window.addEventListener('resize', this.resize)
   },
   methods: {
+    createBarChartArray(markedString, finalArray, allWords) {
+      const allLabels = allWords
+      const final = finalArray
+      // result will be an array of all words in between the <mark></mark> tags
+      const result = markedString
+        .match(/<mark>(.*?)<\/mark>/g)
+        .map(function(value) {
+          return value.replace(/<\/?mark>/g, '')
+        })
+      for (let c = 0; c < result.length; c++) {
+        if (allLabels.includes(result[c])) {
+          if (result[c] === this.$route.query.q) {
+            this.querryFreq += 1
+          }
+          final[this.findWord(result[c], allLabels)].value += 1
+        } else {
+          if (result[c] === this.$route.query.q) {
+            this.querryHigh = 0
+            this.querryFreq += 1
+          }
+          allLabels.push(result[c])
+          final.push({
+            label: result[c],
+            value: 1
+          })
+        }
+      }
+      return final
+    },
+    getFreq(result) {
+      this.querryFreq = result
+    },
     resize() {
       const heatDiv = document.getElementById(this.charts.heatmap.divId)
       if (heatDiv) {
@@ -256,7 +340,6 @@ export default {
           .getElementById(this.charts.heatmap.svgId)
           .setAttribute('height', this.charts.heatmap.height)
       }
-
       const conceptDiv = document.getElementById(this.charts.conceptmap.divId)
       if (conceptDiv) {
         this.charts.conceptmap.width = conceptDiv.clientWidth - 30
@@ -267,6 +350,15 @@ export default {
           .getElementById(this.charts.conceptmap.svgId)
           .setAttribute('height', this.charts.conceptmap.height)
       }
+    },
+    findWord(label, allLabels) {
+      this.labels = allLabels
+      for (let c = 0; c < allLabels.length; c++) {
+        if (allLabels[c] === label) {
+          return c
+        }
+      }
+      return 0
     }
   }
 }
