@@ -2,69 +2,50 @@
   <!--  TODO: Edit this file -->
   <v-card
     class="mx-auto"
-    :loading="loading"
+    :loading="meta.isLoading"
     :outlined="outlined"
     :flat="flat"
     :hover="hover"
     :rounded="rounded"
     :max-width="maxWidth"
   >
-    <v-img
-      height="250"
-      src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
-    ></v-img>
+    <template v-show="meta.isLoading === false">
+      <v-img
+        v-show="meta.image"
+        height="250"
+        src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
+      ></v-img>
 
-    <v-card-title>Cafe Badilico</v-card-title>
+      <template v-if="meta.isLoading === false">
+        <v-card-title
+          >{{ meta.title }} ({{
+            `${meta.number_of_pages} Pages`
+          }})</v-card-title
+        >
 
-    <v-card-text>
-      <v-row align="center" class="mx-0">
-        <v-rating
-          :value="4.5"
-          color="amber"
-          dense
-          half-increments
-          readonly
-          size="14"
-        ></v-rating>
+        <v-card-text>
+          <v-row align="center" class="mx-0">
+            <div class="grey--text">{{ meta.created_date }}</div>
+          </v-row>
 
-        <div class="grey--text ml-4">4.5 (413)</div>
-      </v-row>
+          <div class="my-4 subtitle-1">
+            {{ meta.author }}
+          </div>
 
-      <div class="my-4 subtitle-1">
-        $ • Italian, Cafe
-      </div>
+          <div>
+            {{ meta.abstract }}
+          </div>
+        </v-card-text>
 
-      <div>
-        Small plates, salads & sandwiches - an intimate setting with 12 indoor
-        seats plus patio seating.
-      </div>
-    </v-card-text>
+        <v-divider class="mx-4"></v-divider>
+      </template>
 
-    <v-divider class="mx-4"></v-divider>
-
-    <v-card-title>Tonight's availability</v-card-title>
-
-    <v-card-text>
-      <v-chip-group
-        v-model="selection"
-        active-class="deep-purple accent-4 white--text"
-        column
-      >
-        <v-chip>5:30PM</v-chip>
-
-        <v-chip>7:30PM</v-chip>
-
-        <v-chip>8:00PM</v-chip>
-
-        <v-chip>9:00PM</v-chip>
-      </v-chip-group>
-    </v-card-text>
-
-    <v-card-actions>
-      <v-btn color="deep-purple lighten-2" text @click="reserve">
-        Reserve
-      </v-btn>
-    </v-card-actions>
+      <v-card-actions>
+        <v-btn color="deep-purple lighten-2" text @click="viewDoc(meta.doc_id)">
+          View Doc
+        </v-btn>
+      </v-card-actions>
+    </template>
   </v-card>
 </template>
 
@@ -91,16 +72,31 @@ export default {
     maxWidth: {
       type: String,
       default: '100%'
+    },
+    meta: {
+      type: Object,
+      default: () => ({
+        isLoading: true,
+        doc_id: '',
+        image: '',
+        title: '',
+        author: '',
+        created_date: null,
+        abstract: '',
+        number_of_pages: 0
+      })
     }
   },
   data: () => ({
-    loading: false,
     selection: 1
   }),
   methods: {
     reserve() {
       this.loading = true
       setTimeout(() => (this.loading = false), 2000)
+    },
+    viewDoc(docId) {
+      this.$router.push('/docs/' + docId)
     }
   }
 }
