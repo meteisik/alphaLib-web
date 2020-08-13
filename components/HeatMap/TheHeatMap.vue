@@ -10,8 +10,9 @@
         :height="yScale.bandwidth()"
         :style="'fill: ' + colorScale(item.value) + ';'"
         class="rect"
-        @click="rectClick(item)"
-        @mouseenter="hoverHighlight(item)"
+        @mouseover="rectClick(item)"
+        @mouseenter="hoverHighlightEnter(item)"
+        @mouseleave="hoverHighlightLeave(item)"
       >
         <title>{{ item.value }}</title>
       </rect>
@@ -86,6 +87,11 @@ export default {
           padding: 0.1,
           element: null
         }
+      },
+      HeatMapData: {
+        que: '',
+        docName: '',
+        value: 0
       }
     }
   },
@@ -142,6 +148,18 @@ export default {
       return d3.axisLeft(this.yScale)
     }
   },
+  created() {
+    eventBus.$on('hoverFromConceptMap', (data) => {
+      if (data != null) {
+        console.log('heat map received' + JSON.stringify(data))
+        // this.HeatMapData.que = data.x
+        this.HeatMapData.docName = data.title
+        this.heatMapHighlight(data.title)
+        // this.HeatMapData.value = data.value
+      }
+      // console.log((this.HeatMapData.que = data.x))
+    })
+  },
   beforeUpdate() {
     // re-draw axes
     this.drawAxes()
@@ -152,6 +170,9 @@ export default {
     window.addEventListener('resize', this.resize)
   },
   methods: {
+    heatMapHighlight(data) {
+      this.rects = d3.selectAll('#rects').attr('fill', this.colorScale(100))
+    },
     setupSVG() {
       // Select the SVG element
       this.svg = d3.select('.heatmap')
@@ -183,12 +204,14 @@ export default {
     rectClick(item) {
       console.log('rect click sent : ' + JSON.stringify(item))
       eventBus.$emit('rectClickFromHeatMap', item)
-      // this.$emit('rectClickFromHeatMap', 'string')
     },
-    hoverHighlight(item) {
-      console.log('rect highlight sent : ' + JSON.stringify(item))
+    hoverHighlightEnter(item) {
+      console.log('rect highlight enter sent : ' + JSON.stringify(item))
       eventBus.$emit('hoverHighlightFromHeatMap', item)
-      // this.$emit('rectClickFromHeatMap', 'string')
+    },
+    hoverHighlightLeave(item) {
+      console.log('rect highlight leave sent : ' + JSON.stringify(item))
+      eventBus.$emit('nodeHighlightOff', item)
     },
     columnClick(item) {
       eventBus.$emit('rectClickFromHeatMap', item)

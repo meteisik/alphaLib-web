@@ -32,7 +32,6 @@
     <!--    </g>-->
   </svg>
 </template>
-
 <script>
 import * as d3 from 'd3'
 import { eventBus } from '@/plugins/bus.js'
@@ -127,8 +126,28 @@ export default {
         )
       }
     })
+    eventBus.$on('nodeHighlightOff', (data) => {
+      if (data != null) {
+        this.HeatMapData.que = data.x
+        this.HeatMapData.docName = data.y
+        this.HeatMapData.value = data.value
+        this.HeatMapData.idDoc = data.id
+        this.nodeHighlightOff(
+          this.HeatMapData.que,
+          this.HeatMapData.idDoc,
+          this.HeatMapData.docName,
+          this.HeatMapData.value
+        )
+      }
+    })
   },
   methods: {
+    sendHoverOut(item) {
+      console.log(
+        'highlight sent out from graphforanalytics: ' + JSON.stringify(item)
+      )
+      eventBus.$emit('hoverFromConceptMap', item)
+    },
     nodeHighlight(query, idDoc, docName, value) {
       if (this.nodes !== undefined) {
         for (const node of this.nodes) {
@@ -147,6 +166,24 @@ export default {
         }
       }
     },
+    nodeHighlightOff(query, idDoc, docName, value) {
+      if (this.nodes !== undefined) {
+        for (const node of this.nodes) {
+          if (node.title === query) {
+            node.group = 'Query'
+            d3.selectAll('circle').remove()
+            d3.selectAll('line').remove()
+            this.loadGraph()
+          }
+          if (node.id === idDoc) {
+            node.group = 'Cited Works'
+            d3.selectAll('circle').remove()
+            d3.selectAll('line').remove()
+            this.loadGraph()
+          }
+        }
+      }
+    },
     loadGraph() {
       // Store the locators
       d3.selectAll('circle').remove()
@@ -156,6 +193,7 @@ export default {
       this.lines = d3.select('#lines-group')
       const drag = (simulation) => {
         function dragstarted(d) {
+          console.log(d.title)
           if (!d3.event.active) simulation.alphaTarget(0.3).restart()
           d.fx = d.x
           d.fy = d.y
@@ -202,6 +240,19 @@ export default {
         .join('circle')
         .attr('r', (d) => d.radius)
         .attr('fill', (d) => this.colorScale(d.group))
+        .on('mouseover', (d) => this.sendHoverOut(d))
+        // .on('click', function(d) {
+        //   d3.select(this)
+        //     .call(this.sendHoverIn(d))
+        //     .style({ opacity: '0.8' })
+        //   d3.select('text').style({ opacity: '1.0' })
+        // })
+        // .on('mouseout', function(d) {
+        //   d3.select(this)
+        //     .call(this.sendHoverOut(d))
+        //     .style({ opacity: '0.0' })
+        //   d3.select('text').style({ opacity: '0.0' })
+        // })
         .call(drag(simulation))
       simulation.on('tick', () => {
         link
@@ -215,5 +266,4 @@ export default {
   }
 }
 </script>
-
 <style scoped></style>
